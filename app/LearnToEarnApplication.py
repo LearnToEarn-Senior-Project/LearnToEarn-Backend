@@ -1,13 +1,12 @@
-import os
-from flask import Flask , render_template
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 from src.database import DB
+from src.routes.route import Routes
 
-project_root = os.path.dirname(__file__)
-template_path = os.path.join(project_root, 'src/templates')
-
-app = Flask(__name__,template_folder=template_path)
-DB.init()
-
+app = Flask(__name__)
+app.register_blueprint(Routes.getBlueprint())
+CORS(app)
+DB()
 
 if __name__ == "__main__":
-   app.run()
+    app.run()
