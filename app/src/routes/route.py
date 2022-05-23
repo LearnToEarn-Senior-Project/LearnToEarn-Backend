@@ -1,5 +1,6 @@
 from flask import request, Blueprint, jsonify
 from app.src.entity.reward.reward import Reward
+from app.src.entity.assignment.assignment import Assignment
 
 route = Blueprint('route', __name__)
 
@@ -24,3 +25,8 @@ class Routes:
                         image=request.json['image'])
         reward.addReward()
         return 'Success'
+
+    @staticmethod
+    @route.route('/assignments', methods=["GET"])
+    def getAllAssignment():
+        return Assignment.getAllAssignment()
