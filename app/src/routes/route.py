@@ -1,6 +1,7 @@
 from flask import request, Blueprint
 from app.src.entity.reward.reward import Reward
 from app.src.entity.user.googleUser import GoogleUser
+from app.src.entity.user.user import User
 
 route = Blueprint('route', __name__)
 
@@ -18,25 +19,59 @@ class Routes:
     @staticmethod
     @route.route('/addReward', methods=["POST"])
     def adminAddReward():
-        reward = Reward(reward_name=request.json['reward_name'],
-                        detail=request.json['detail'],
-                        amount=request.json['amount'],
-                        price=request.json['price'],
-                        image=request.json['image'])
-        reward.addReward()
-        return 'Success'
+        reward = Reward(request.json['reward_name'],
+                        request.json['detail'],
+                        request.json['amount'],
+                        request.json['price'],
+                        request.json['image'])
+        return reward.addReward()
 
     @staticmethod
     @route.route('/google_login', methods=["POST"])
     def googleLogin():
-        googleUser = GoogleUser(access_token=request.json['access_token'], firstname=request.json['firstname'],
-                                lastname=request.json['lastname'],
-                                email=request.json['email'],
-                                image_url=request.json['image_url'])
-        googleUser.addGoogleUser()
-        return 'Success'
+        googleUser = GoogleUser(request.json['id'],
+                                request.json['access_token'],
+                                request.json['firstname'],
+                                request.json['lastname'],
+                                request.json['email'],
+                                request.json['image_url'])
+        googleUser.bindGoogleAccount()
+        return "success"
 
     @staticmethod
-    @route.route('/google_get_by_id', methods=["GET"])
-    def googleGetById():
-        return GoogleUser.getGoogleUserById("123")
+    @route.route('/google_logout', methods=["POST"])
+    def googleLogout():
+        GoogleUser.unbindGoogleAccount(request.json['id'])
+        return "success"
+
+    @staticmethod
+    @route.route('/googleGetData/<string:id>', methods=["GET"])
+    def googleGetData(id):
+        return GoogleUser.getUserGoogleData(id)
+
+    @staticmethod
+    @route.route('/login', methods=["POST"])
+    def CMUOAuthLogin():
+        return User.getAccessToken(request.json['code'])
+
+    @staticmethod
+    @route.route('/credentials/<string:token>', methods=["GET"])
+    def CMUOAuthGetUserData(token):
+        return User.getCredentials(token)
+
+    @staticmethod
+    @route.route('/getUser/<string:id>', methods=["GET"])
+    def CMUOAuthGetUserByID(id):
+        return User.getUser(id)
+
+    @staticmethod
+    @route.route('/addUser', methods=["POST"])
+    def CMUOAuthSaveUser():
+        cmuUser = User(request.json['id'],
+                       request.json['firstname'],
+                       request.json['lastname'],
+                       request.json['email'],
+                       None,
+                       request.json['role'])
+        cmuUser.addUser()
+        return "success"
