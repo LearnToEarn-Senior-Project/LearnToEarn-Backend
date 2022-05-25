@@ -12,10 +12,6 @@ class DB(object):
         DB.DATABASE[collection].insert_one(data)
 
     @staticmethod
-    def insert_one(collection, data):
-        DB.DATABASE[collection].insert_one(data)
-
-    @staticmethod
     def update(collection, id, data):
         DB.filter = {'_id': id}
         DB.newValues = {"$set": data}
