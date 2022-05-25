@@ -58,4 +58,4 @@ class User(object):
         return json_data
 
     def addUser(self):
-        DB.insert_one(collection='user', data=self.addUserJson())
+        DB.insert(collection='user', data=self.addUserJson())
