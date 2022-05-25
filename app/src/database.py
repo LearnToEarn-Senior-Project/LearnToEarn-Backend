@@ -1,5 +1,5 @@
 import pymongo
-
+from bson.objectid import ObjectId
 
 class DB(object):
     URI = "mongodb://127.0.0.1:27017"
