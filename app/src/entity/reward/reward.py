@@ -13,7 +13,7 @@ class Reward(object):
         self.price = price
         self.image = image
 
-    def addJson(self):
+    def addRewardJson(self):
         return {
             '_id': ObjectId().__str__(),
             'reward_name': self.reward_name,
@@ -31,4 +31,4 @@ class Reward(object):
         return json_data
 
     def addReward(self):
-        DB.insert(collection='reward', data=self.addJson())
+        DB.insert(collection='reward', data=self.addRewardJson())

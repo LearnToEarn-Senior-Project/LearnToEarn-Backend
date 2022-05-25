@@ -24,7 +24,8 @@ class Routes:
                         request.json['amount'],
                         request.json['price'],
                         request.json['image'])
-        return reward.addReward()
+        reward.addReward()
+        return "Success"
 
     @staticmethod
     @route.route('/google_login', methods=["POST"])
