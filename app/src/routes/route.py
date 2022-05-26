@@ -1,4 +1,7 @@
+from bson import ObjectId
 from flask import request, Blueprint
+
+from app.src.database import DB
 from app.src.entity.reward.reward import Reward
 from app.src.entity.assignment.assignment import Assignment
 from app.src.entity.user.googleUser import GoogleUser
@@ -7,6 +10,7 @@ route = Blueprint('route', __name__)
 
 
 class Routes:
+
     @staticmethod
     def getBlueprint():
         return route
@@ -15,6 +19,11 @@ class Routes:
     @route.route('/rewards', methods=["GET"])
     def getAllReward():
         return Reward.getAllRewards()
+
+    @staticmethod
+    @route.route('/reward/<reward_id>', methods=["GET"])
+    def getRewardByID(reward_id):
+        return Reward.getRewardByID(reward_id)
 
     @staticmethod
     @route.route('/addReward', methods=["POST"])
@@ -28,9 +37,9 @@ class Routes:
         return 'Success'
 
     @staticmethod
-    @route.route('/deleteReward/<reward_id>', methods=["POST"])
+    @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
-        Reward.
+        Reward.deleteReward(reward_id)
         return 'Success'
 
     @staticmethod
