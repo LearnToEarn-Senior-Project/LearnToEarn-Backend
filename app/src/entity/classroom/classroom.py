@@ -1,8 +1,7 @@
 from json import dumps
-
 from bson import ObjectId
-
 from app.src.database import DB
+from app.src.entity.user.googleUser import GoogleUser
 
 
 class Classroom(object):
@@ -33,3 +32,7 @@ class Classroom(object):
         rewardList = list(cursor)
         json_data = dumps(rewardList, indent=2)
         return json_data
+
+    @staticmethod
+    def listAndGetClassroom():
+        return "sadssa"

@@ -38,6 +38,12 @@ class Routes:
         return "Success"
 
     @staticmethod
+
+    @route.route('/google_token', methods=["POST"])
+    def getGoogleToken():
+        GoogleUser.getToken(request.json['auth_code'])
+        return "success"
+
     @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
         Reward.deleteReward(reward_id)
@@ -47,7 +53,6 @@ class Routes:
     @route.route('/google_login', methods=["POST"])
     def googleLogin():
         googleUser = GoogleUser(request.json['id'],
-                                request.json['access_token'],
                                 request.json['firstname'],
                                 request.json['lastname'],
                                 request.json['email'],
