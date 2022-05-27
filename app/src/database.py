@@ -19,4 +19,5 @@ class DB(object):
 
     @staticmethod
     def delete(collection, data):
-        DB.DATABASE[collection].delete_one(data)
+        myquery = {"_id": str(data)}
+        DB.DATABASE[collection].delete_one(myquery)

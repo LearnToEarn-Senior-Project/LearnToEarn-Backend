@@ -41,4 +41,5 @@ class Reward(object):
         DB.insert(collection='reward', data=self.addJson())
 
     def deleteReward(id):
-        DB.delete(collection='reward', data=DB.DATABASE['reward'].find({"_id": id}))
+        myQuery = {'reward':id}
+        DB.delete(collection='reward', data=id)
