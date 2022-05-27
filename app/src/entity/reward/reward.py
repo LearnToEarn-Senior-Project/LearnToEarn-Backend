@@ -30,5 +30,16 @@ class Reward(object):
         json_data = dumps(rewardList, indent=2)
         return json_data
 
+    @staticmethod
+    def getRewardByID(id):
+        cursor = DB.DATABASE['reward'].find({"_id": id})
+        rewardList = list(cursor)
+        json_data = dumps(rewardList, indent=2)
+        return json_data
+
     def addReward(self):
-        DB.insert(collection='reward', data=self.addRewardJson())
+        DB.insert(collection='reward', data=self.addJson())
+
+    def deleteReward(id):
+        myQuery = {'reward':id}
+        DB.delete(collection='reward', data=id)
