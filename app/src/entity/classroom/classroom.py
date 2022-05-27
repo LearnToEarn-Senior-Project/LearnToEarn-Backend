@@ -28,11 +28,8 @@ class Classroom(object):
         }
 
     @staticmethod
-    def getAllRewards():
+    def getAllClassroom():
         cursor = DB.DATABASE['classroom'].find()
         rewardList = list(cursor)
         json_data = dumps(rewardList, indent=2)
         return json_data
-
-    def addReward(self):
-        DB.insert(collection='classroom', data=self.addJson())
