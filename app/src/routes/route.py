@@ -28,10 +28,15 @@ class Routes:
         return "Success"
 
     @staticmethod
+    @route.route('/google_token', methods=["POST"])
+    def getGoogleToken():
+        GoogleUser.getToken(request.json['auth_code'])
+        return "success"
+
+    @staticmethod
     @route.route('/google_login', methods=["POST"])
     def googleLogin():
         googleUser = GoogleUser(request.json['id'],
-                                request.json['access_token'],
                                 request.json['firstname'],
                                 request.json['lastname'],
                                 request.json['email'],
