@@ -1,9 +1,6 @@
-from bson import ObjectId
 from flask import request, Blueprint
-
-from app.src.database import DB
+from app.src.entity.classroom.classroom import Classroom
 from app.src.entity.reward.reward import Reward
-from app.src.entity.assignment.assignment import Assignment
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
 
@@ -38,27 +35,15 @@ class Routes:
         return "Success"
 
     @staticmethod
-
-    @route.route('/google_token', methods=["POST"])
-    def getGoogleToken():
-        GoogleUser.getToken(request.json['auth_code'])
-        return "success"
-
-    @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
-    def adminDeleteReward(reward_id):
-        Reward.deleteReward(reward_id)
-        return 'Success'
-
-    @staticmethod
     @route.route('/google_login', methods=["POST"])
-    def googleLogin():
-        googleUser = GoogleUser(request.json['id'],
-                                request.json['firstname'],
-                                request.json['lastname'],
-                                request.json['email'],
-                                request.json['image_url'])
-        googleUser.bindGoogleAccount()
+    def getGoogleToken():
+        GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
         return "success"
+
+    # @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
+    # def adminDeleteReward(reward_id):
+    #     Reward.deleteReward(reward_id)
+    #     return 'Success'
 
     @staticmethod
     @route.route('/google_logout', methods=["POST"])
@@ -70,6 +55,11 @@ class Routes:
     @route.route('/googleGetData/<string:id>', methods=["GET"])
     def googleGetData(id):
         return GoogleUser.getUserGoogleData(id)
+
+    @staticmethod
+    @route.route('/getGoogleClassrooms/<string:id>', methods=["GET", "POST"])
+    def getAllGoogleClassrooms(id):
+        return Classroom.getAllGoogleClassrooms(id)
 
     @staticmethod
     @route.route('/login', methods=["POST"])

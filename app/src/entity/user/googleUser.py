@@ -8,44 +8,24 @@ class GoogleUser(object):
     user_token = None
     client_id = "726873603726-tq3t7s31jodv5qcu335dpn8beln6oise.apps.googleusercontent.com"
     client_secret = "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"
+    firstname = None
+    lastname = None
+    email = None
+    image_url = None
 
-    def __init__(self, id, firstname, lastname, email, image_url):
-        self.id = id
-        self.firstname = firstname
-        self.lastname = lastname
-        self.email = email
-        self.image_url = image_url
-
-    def addGoogleJson(self):
+    @staticmethod
+    def addGoogleJson():
         return {
             '_id': ObjectId().__str__(),
             'user_token': GoogleUser.user_token,
-            'firstname': self.firstname,
-            'lastname': self.lastname,
-            'email': self.email,
-            'image_url': self.image_url
+            'firstname': GoogleUser.firstname,
+            'lastname': GoogleUser.lastname,
+            'email': GoogleUser.email,
+            'image_url': GoogleUser.image_url
         }
 
     @staticmethod
-    def unbindGoogleAccount(id):
-        DB.update(collection='user', id=id, data={"google_object": None})
-
-    def bindGoogleAccount(self):
-        DB.update(collection='user', id=self.id, data={"google_object": self.addGoogleJson()})
-
-    @staticmethod
-    def getUserGoogleData(id):
-        cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)
-        googleUser = googleUser[0]["google_object"]
-        if googleUser is not None:
-            del googleUser["_id"]
-            del googleUser["user_token"]
-        json_data = dumps(googleUser, indent=2)
-        return json_data
-
-    @staticmethod
-    def getToken(authCode):
+    def bindGoogleAccount(id, authCode):
         auth_code = authCode
         scope = "profile " \
                 "email " \
@@ -58,4 +38,24 @@ class GoogleUser(object):
             "access_token": credentials.access_token,
             "refresh_token": credentials.refresh_token
         }
-        return GoogleUser.user_token
+        googleData = credentials.id_token
+        GoogleUser.firstname = googleData["given_name"]
+        GoogleUser.lastname = googleData["family_name"]
+        GoogleUser.email = googleData["email"]
+        GoogleUser.image_url = googleData["picture"]
+        DB.update(collection='user', id=id, data={"google_object": GoogleUser.addGoogleJson()})
+
+    @staticmethod
+    def unbindGoogleAccount(id):
+        DB.update(collection='user', id=id, data={"google_object": None})
+
+    @staticmethod
+    def getUserGoogleData(id):
+        cursor = DB.DATABASE['user'].find({"_id": id})
+        googleUser = list(cursor)
+        googleUser = googleUser[0]["google_object"]
+        if googleUser is not None:
+            del googleUser["_id"]
+            del googleUser["user_token"]
+        json_data = dumps(googleUser, indent=2)
+        return json_data
