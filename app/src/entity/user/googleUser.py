@@ -1,7 +1,7 @@
 from json import dumps
 from bson import ObjectId
 from app.src.database import DB
-from oauth2client import client
+# from oauth2client import client
 
 
 class GoogleUser(object):
@@ -44,18 +44,18 @@ class GoogleUser(object):
         json_data = dumps(googleUser, indent=2)
         return json_data
 
-    @staticmethod
-    def getToken(authCode):
-        auth_code = authCode
-        scope = "profile " \
-                "email " \
-                "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly " \
-                "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly " \
-                "https://www.googleapis.com/auth/classroom.courses.readonly " \
-                "https://www.googleapis.com/auth/classroom.rosters.readonly"
-        credentials = client.credentials_from_code(GoogleUser.client_id, GoogleUser.client_secret, scope, auth_code)
-        GoogleUser.user_token = {
-            "access_token": credentials.access_token,
-            "refresh_token": credentials.refresh_token
-        }
-        return GoogleUser.user_token
+    # @staticmethod
+    # def getToken(authCode):
+    #     auth_code = authCode
+    #     scope = "profile " \
+    #             "email " \
+    #             "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly " \
+    #             "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly " \
+    #             "https://www.googleapis.com/auth/classroom.courses.readonly " \
+    #             "https://www.googleapis.com/auth/classroom.rosters.readonly"
+    #     credentials = client.credentials_from_code(GoogleUser.client_id, GoogleUser.client_secret, scope, auth_code)
+    #     GoogleUser.user_token = {
+    #         "access_token": credentials.access_token,
+    #         "refresh_token": credentials.refresh_token
+    #     }
+    #     return GoogleUser.user_token

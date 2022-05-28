@@ -21,5 +21,12 @@ class Criteria(object):
             'submit_stack': self.submit_stack
         }
 
-    def addReward(self):
-        DB.insert(collection='Criteria', data=self.addJson())
+    def addCriteria(self):
+        DB.insert(collection='criteria', data=self.addJson())
+
+    @staticmethod
+    def getAllCriterias():
+        cursor = DB.DATABASE['criteria'].find()
+        criteriaList = list(cursor)
+        json_data = dumps(criteriaList, indent=2)
+        return json_data

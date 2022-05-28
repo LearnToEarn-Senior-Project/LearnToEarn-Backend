@@ -3,6 +3,7 @@ from flask import request, Blueprint
 
 from app.src.database import DB
 from app.src.entity.reward.reward import Reward
+from app.src.entity.criteria.criteria import Criteria
 from app.src.entity.assignment.assignment import Assignment
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
@@ -97,3 +98,8 @@ class Routes:
                        request.json['role'])
         cmuUser.addUser()
         return "success"
+
+    @staticmethod
+    @route.route('/criterias', methods=["GET"])
+    def getAllCriterias():
+        return Criteria.getAllCriterias()
