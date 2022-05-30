@@ -5,27 +5,6 @@ from app.src.entity.user.googleUser import GoogleUser
 
 
 class Classroom(object):
-    def __init__(self, id, classroom_name, total_member, semester, teacher, environment, assignment_list, student_list):
-        self.id = id
-        self.classroom_name = classroom_name
-        self.total_member = total_member
-        self.semester = semester
-        self.teacher = teacher
-        self.environment = environment
-        self.assignment_list = assignment_list
-        self.student_list = student_list
-
-    def addClassroomJson(self):
-        return {
-            '_id': self.id,
-            'classroom_name': self.classroom_name,
-            'total_member': self.total_member,
-            'semester': self.semester,
-            'teacher': self.teacher,
-            'environment': self.environment,
-            'assignment_list': self.assignment_list,
-            'student_list': self.student_list
-        }
 
     @staticmethod
     def getAllClassroom():
@@ -45,7 +24,7 @@ class Classroom(object):
             "Authorization": "Bearer " + googleUser["access_token"]
         }
         response = requests.get(AllClassroomURI, headers=headers)
-        if response.status_code == 400:
+        if response.status_code is not 200:
             auth_url = "https://accounts.google.com/o/oauth2/token"
             params = {
                 "grant_type": "refresh_token",
@@ -57,23 +36,43 @@ class Classroom(object):
             DB.update(collection='user', id=id, data={
                 "google_object.user_token.access_token": refresh_response.json()["access_token"]
             })
-        response = requests.get(AllClassroomURI, headers=headers)
         data = response.json()["courses"]
-        json_data = dumps(data, indent=2)
-        for data in data:
-            GetAllTeacherURI = "https://classroom.googleapis.com/v1/courses/{}/teachers".format(data["id"])
-            GetAllStudentURI = "https://classroom.googleapis.com/v1/courses/{}/students".format(data["id"])
-            teacher_response = requests.get(GetAllTeacherURI, headers=headers)
-            student_response = requests.get(GetAllStudentURI, headers=headers)
-            teacher_object = teacher_response.json()
-            student_object = student_response.json()
-            # try:
-            #     if teacher_object["teachers"] and student_object["students"] is not None:
-            #         Classroom(id=data["id"], classroom_name=data["name"], )
-            # except:
-            #     print("")
-            print("////////////////////")
-        return json_data
 
-    def addGoogleClassroom(self):
-        DB.insert(collection='classroom', data=self.addClassroomJson())
+        for data in data:
+            if not list(DB.DATABASE['classroom'].find({"_id": data["id"]})):
+                GetAllTeacherURI = "https://classroom.googleapis.com/v1/courses/{}/teachers".format(data["id"])
+                GetAllStudentURI = "https://classroom.googleapis.com/v1/courses/{}/students".format(data["id"])
+                GetAllAssignmentURI = "https://classroom.googleapis.com/v1/courses/{}/courseWork".format(data["id"])
+                teacher_response = requests.get(GetAllTeacherURI, headers=headers)
+                student_response = requests.get(GetAllStudentURI, headers=headers)
+                assignment_response = requests.get(GetAllAssignmentURI, headers=headers)
+                try:
+                    teacher_object = teacher_response.json()["teachers"]
+                    student_object = student_response.json()["students"]
+                    assignment_object = assignment_response.json()["courseWork"]
+                except:
+                    teacher_object = {}
+                    student_object = {}
+                    assignment_object = {}
+                    pass
+                if teacher_object and student_object is not None:
+                    try:
+                        DB.insert(collection='classroom', data={
+                            '_id': data["id"],
+                            'classroom_name': data["name"],
+                            'total_member': student_object.__len__(),
+                            'environment': "google_classroom",
+                            'teacher': teacher_object,
+                            'student_list': student_object,
+                            'assignment_list': assignment_object,
+                        })
+                    except:
+                        pass
+            # print(student_object)
+            # print(teacher_object)
+            # print(assignment_object)
+        cursor = DB.DATABASE['classroom'].find({})
+        classroom_list = list(cursor)
+        json_data = dumps(classroom_list, indent=2)
+        print(json_data)
+        return json_data

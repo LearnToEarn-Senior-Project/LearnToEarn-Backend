@@ -13,16 +13,6 @@ class Reward(object):
         self.price = price
         self.image = image
 
-    def addRewardJson(self):
-        return {
-            '_id': ObjectId().__str__(),
-            'reward_name': self.reward_name,
-            'detail': self.detail,
-            'amount': self.amount,
-            'price': self.price,
-            'image': self.image
-        }
-
     @staticmethod
     def getAllRewards():
         cursor = DB.DATABASE['reward'].find()
@@ -38,8 +28,16 @@ class Reward(object):
         return json_data
 
     def addReward(self):
-        DB.insert(collection='reward', data=self.addJson())
+        DB.insert(collection='reward', data={
+            '_id': ObjectId().__str__(),
+            'reward_name': self.reward_name,
+            'detail': self.detail,
+            'amount': self.amount,
+            'price': self.price,
+            'image': self.image
+        })
 
+    @staticmethod
     def deleteReward(id):
-        myQuery = {'reward':id}
+        myQuery = {'reward': id}
         DB.delete(collection='reward', data=id)

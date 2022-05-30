@@ -3,12 +3,12 @@ from app.src.entity.classroom.classroom import Classroom
 from app.src.entity.reward.reward import Reward
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
+from app.src.database import DB
 
 route = Blueprint('route', __name__)
 
 
 class Routes:
-
     @staticmethod
     def getBlueprint():
         return route
@@ -40,10 +40,11 @@ class Routes:
         GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
         return "success"
 
-    # @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
-    # def adminDeleteReward(reward_id):
-    #     Reward.deleteReward(reward_id)
-    #     return 'Success'
+    @staticmethod
+    @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
+    def adminDeleteReward(reward_id):
+        Reward.deleteReward(reward_id)
+        return 'Success'
 
     @staticmethod
     @route.route('/google_logout', methods=["POST"])
@@ -85,5 +86,12 @@ class Routes:
                        request.json['email'],
                        None,
                        request.json['role'])
-        cmuUser.addUser()
+        DB.insert(collection='user', data={
+            '_id': cmuUser.id,
+            'firstname': cmuUser.firstname,
+            'lastname': cmuUser.lastname,
+            'email': cmuUser.email,
+            'google_object': cmuUser.googleObject,
+            'role': cmuUser.role
+        })
         return "success"

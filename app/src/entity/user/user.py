@@ -13,16 +13,6 @@ class User(object):
         self.googleObject = googleObject
         self.role = role
 
-    def addUserJson(self):
-        return {
-            '_id': self.id,
-            'firstname': self.firstname,
-            'lastname': self.lastname,
-            'email': self.email,
-            'google_object': self.googleObject,
-            'role': self.role
-        }
-
     @staticmethod
     def getAccessToken(code):
         client_id = "DfQ7tTs1Qua9Jktfz5UupXN3uvZHsD1HUtYq617r"
@@ -54,8 +44,9 @@ class User(object):
     def getUser(id):
         cursor = DB.DATABASE['user'].find({"_id": id})
         cmuUser = list(cursor)
+        try:
+            del cmuUser[0]["google_object"]
+        except:
+            pass
         json_data = dumps(cmuUser, indent=2)
         return json_data
-
-    def addUser(self):
-        DB.insert(collection='user', data=self.addUserJson())

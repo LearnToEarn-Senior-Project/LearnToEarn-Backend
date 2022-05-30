@@ -5,24 +5,13 @@ from oauth2client import client
 
 
 class GoogleUser(object):
-    user_token = None
     client_id = "726873603726-tq3t7s31jodv5qcu335dpn8beln6oise.apps.googleusercontent.com"
     client_secret = "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"
+    user_token = None
     firstname = None
     lastname = None
     email = None
     image_url = None
-
-    @staticmethod
-    def addGoogleJson():
-        return {
-            '_id': ObjectId().__str__(),
-            'user_token': GoogleUser.user_token,
-            'firstname': GoogleUser.firstname,
-            'lastname': GoogleUser.lastname,
-            'email': GoogleUser.email,
-            'image_url': GoogleUser.image_url
-        }
 
     @staticmethod
     def bindGoogleAccount(id, authCode):
@@ -43,7 +32,14 @@ class GoogleUser(object):
         GoogleUser.lastname = googleData["family_name"]
         GoogleUser.email = googleData["email"]
         GoogleUser.image_url = googleData["picture"]
-        DB.update(collection='user', id=id, data={"google_object": GoogleUser.addGoogleJson()})
+        DB.update(collection='user', id=id, data={"google_object": {
+            '_id': ObjectId().__str__(),
+            'user_token': GoogleUser.user_token,
+            'firstname': GoogleUser.firstname,
+            'lastname': GoogleUser.lastname,
+            'email': GoogleUser.email,
+            'image_url': GoogleUser.image_url
+        }})
 
     @staticmethod
     def unbindGoogleAccount(id):

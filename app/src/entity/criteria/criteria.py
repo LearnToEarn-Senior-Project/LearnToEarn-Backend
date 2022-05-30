@@ -12,14 +12,11 @@ class Criteria(object):
         self.top_rank = top_rank
         self.submit_stack = submit_stack
 
-    def addJson(self):
-        return {
+    def addReward(self):
+        DB.insert(collection='Criteria', data={
             '_id': ObjectId().__str__(),
             'criteria_name': self.criteria_name,
             'criteria_detail': self.criteria_detail,
             'top_rank': self.top_rank,
             'submit_stack': self.submit_stack
-        }
-
-    def addReward(self):
-        DB.insert(collection='Criteria', data=self.addJson())
+        })
