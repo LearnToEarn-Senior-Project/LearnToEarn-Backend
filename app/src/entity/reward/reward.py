@@ -6,8 +6,8 @@ from app.src.database import DB
 
 
 class Reward(object):
-    def __init__(self, reward_name, detail, amount, price, image):
-        self.reward_name = reward_name
+    def __init__(self, name, detail, amount, price, image):
+        self.name = name
         self.detail = detail
         self.amount = amount
         self.price = price
@@ -28,16 +28,18 @@ class Reward(object):
         return json_data
 
     def addReward(self):
+        id = ObjectId().__str__()
         DB.insert(collection='reward', data={
-            '_id': ObjectId().__str__(),
-            'reward_name': self.reward_name,
+            '_id': id,
+            'name': self.name,
             'detail': self.detail,
             'amount': self.amount,
             'price': self.price,
             'image': self.image
         })
+        return self.getRewardByID(id)
 
     @staticmethod
     def deleteReward(id):
-        myQuery = {'reward': id}
         DB.delete(collection='reward', data=id)
+        return Reward.getRewardByID(id)

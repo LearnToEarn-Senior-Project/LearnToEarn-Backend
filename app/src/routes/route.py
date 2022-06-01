@@ -3,7 +3,6 @@ from app.src.entity.classroom.classroom import Classroom
 from app.src.entity.reward.reward import Reward
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
-from app.src.database import DB
 
 route = Blueprint('route', __name__)
 
@@ -26,31 +25,27 @@ class Routes:
     @staticmethod
     @route.route('/addReward', methods=["POST"])
     def adminAddReward():
-        reward = Reward(request.json['reward_name'],
+        reward = Reward(request.json['name'],
                         request.json['detail'],
                         request.json['amount'],
                         request.json['price'],
                         request.json['image'])
-        reward.addReward()
-        return "Success"
+        return reward.addReward()
 
     @staticmethod
     @route.route('/google_login', methods=["POST"])
     def getGoogleToken():
-        GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
-        return "success"
+        return GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
 
     @staticmethod
     @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
-        Reward.deleteReward(reward_id)
-        return 'Success'
+        return Reward.deleteReward(reward_id)
 
     @staticmethod
     @route.route('/google_logout', methods=["POST"])
     def googleLogout():
-        GoogleUser.unbindGoogleAccount(request.json['id'])
-        return "success"
+        return GoogleUser.unbindGoogleAccount(request.json['id'])
 
     @staticmethod
     @route.route('/googleGetData/<string:id>', methods=["GET"])
@@ -86,12 +81,4 @@ class Routes:
                        request.json['email'],
                        None,
                        request.json['role'])
-        DB.insert(collection='user', data={
-            '_id': cmuUser.id,
-            'firstname': cmuUser.firstname,
-            'lastname': cmuUser.lastname,
-            'email': cmuUser.email,
-            'google_object': cmuUser.googleObject,
-            'role': cmuUser.role
-        })
-        return "success"
+        return cmuUser.addUser()

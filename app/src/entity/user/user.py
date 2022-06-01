@@ -40,6 +40,17 @@ class User(object):
         response = requests.get(URI, headers=headers)
         return response.json()
 
+    def addUser(self):
+        DB.insert(collection='user', data={
+            '_id': self.id,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'email': self.email,
+            'google_object': self.googleObject,
+            'role': self.role
+        })
+        return self.getUser(self.id)
+
     @staticmethod
     def getUser(id):
         cursor = DB.DATABASE['user'].find({"_id": id})

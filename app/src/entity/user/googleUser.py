@@ -40,6 +40,10 @@ class GoogleUser(object):
             'email': GoogleUser.email,
             'image_url': GoogleUser.image_url
         }})
+        cursor = DB.DATABASE['user'].find({"_id": id})
+        googleUser = list(cursor)
+        googleUser = googleUser[0]["google_object"]
+        return googleUser
 
     @staticmethod
     def unbindGoogleAccount(id):

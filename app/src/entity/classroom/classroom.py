@@ -59,7 +59,7 @@ class Classroom(object):
                     try:
                         DB.insert(collection='classroom', data={
                             '_id': data["id"],
-                            'classroom_name': data["name"],
+                            'name': data["name"],
                             'total_member': student_object.__len__(),
                             'environment': "google_classroom",
                             'teacher': teacher_object,
