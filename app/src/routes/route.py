@@ -1,10 +1,8 @@
 from bson import ObjectId
 from flask import request, Blueprint
 
-from app.src.database import DB
 from app.src.entity.reward.reward import Reward
 from app.src.entity.criteria.criteria import Criteria
-from app.src.entity.assignment.assignment import Assignment
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
 
@@ -17,6 +15,7 @@ class Routes:
     def getBlueprint():
         return route
 
+# ========================= Reward session ============================
     @staticmethod
     @route.route('/rewards', methods=["GET"])
     def getAllReward():
@@ -39,16 +38,30 @@ class Routes:
         return "Success"
 
     @staticmethod
-
-    @route.route('/google_token', methods=["POST"])
-    def getGoogleToken():
-        GoogleUser.getToken(request.json['auth_code'])
-        return "success"
-
     @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
         Reward.deleteReward(reward_id)
         return 'Success'
+
+    @staticmethod
+    @route.route('/updateReward/<reward_id>', methods=["PATCH"])
+    def adminUpdateReward(reward_id):
+        Form_RewardName = request.form["reward_name"]
+        Form_Detail = request.form["detail"]
+        Form_Amount = request.form["amount"]
+        Form_Price = request.form["price"]
+        Form_Image = request.form["image"]
+        Reward.updateReward(reward_id,Form_RewardName,Form_Detail,Form_Amount,Form_Price,Form_Image)
+        return 'Success'
+
+# ========================= Reward session ============================
+# ========================= Google session ============================
+
+    @staticmethod
+    @route.route('/google_token', methods=["POST"])
+    def getGoogleToken():
+        GoogleUser.getToken(request.json['auth_code'])
+        return "success"
 
     @staticmethod
     @route.route('/google_login', methods=["POST"])
@@ -71,6 +84,9 @@ class Routes:
     @route.route('/googleGetData/<string:id>', methods=["GET"])
     def googleGetData(id):
         return GoogleUser.getUserGoogleData(id)
+
+# ========================= Google session ============================
+# =========================== CMU session =============================
 
     @staticmethod
     @route.route('/login', methods=["POST"])
@@ -99,7 +115,12 @@ class Routes:
         cmuUser.addUser()
         return "success"
 
+# =========================== CMU session =============================
+# =========================== Criteria session =============================
+
     @staticmethod
     @route.route('/criterias', methods=["GET"])
     def getAllCriterias():
         return Criteria.getAllCriterias()
+
+# =========================== Criteria session =============================
