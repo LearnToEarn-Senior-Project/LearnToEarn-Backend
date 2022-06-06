@@ -1,10 +1,10 @@
-import pymongo
-from bson.objectid import ObjectId
+from pymongo import MongoClient
+
 
 class DB(object):
     URI = "mongodb://127.0.0.1:27017"
 
-    client = pymongo.MongoClient(URI)
+    client = MongoClient(URI)
     DATABASE = client['learn-to-earn']
 
     @staticmethod

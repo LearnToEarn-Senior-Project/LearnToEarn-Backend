@@ -1,8 +1,9 @@
-from bson import ObjectId
 from flask import request, Blueprint
 
+from app.src.entity.classroom.classroom import Classroom
 from app.src.entity.reward.reward import Reward
 from app.src.entity.criteria.criteria import Criteria
+
 from app.src.entity.user.googleUser import GoogleUser
 from app.src.entity.user.user import User
 
@@ -10,7 +11,6 @@ route = Blueprint('route', __name__)
 
 
 class Routes:
-
     @staticmethod
     def getBlueprint():
         return route
@@ -29,15 +29,17 @@ class Routes:
     @staticmethod
     @route.route('/addReward', methods=["POST"])
     def adminAddReward():
-        reward = Reward(request.json['reward_name'],
+        reward = Reward(request.json['name'],
                         request.json['detail'],
                         request.json['amount'],
                         request.json['price'],
                         request.json['image'])
-        reward.addReward()
-        return "Success"
+        return reward.addReward()
 
     @staticmethod
+
+    @route.route('/google_login', methods=["POST"])
+
     @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
         Reward.deleteReward(reward_id)
@@ -60,8 +62,7 @@ class Routes:
     @staticmethod
     @route.route('/google_token', methods=["POST"])
     def getGoogleToken():
-        GoogleUser.getToken(request.json['auth_code'])
-        return "success"
+        return GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
 
     @staticmethod
     @route.route('/google_login', methods=["POST"])
@@ -77,8 +78,7 @@ class Routes:
     @staticmethod
     @route.route('/google_logout', methods=["POST"])
     def googleLogout():
-        GoogleUser.unbindGoogleAccount(request.json['id'])
-        return "success"
+        return GoogleUser.unbindGoogleAccount(request.json['id'])
 
     @staticmethod
     @route.route('/googleGetData/<string:id>', methods=["GET"])
@@ -87,6 +87,11 @@ class Routes:
 
 # ========================= Google session ============================
 # =========================== CMU session =============================
+
+    @staticmethod
+    @route.route('/getGoogleClassrooms/<string:id>', methods=["GET", "POST"])
+    def getAllGoogleClassrooms(id):
+        return Classroom.getAllGoogleClassrooms(id)
 
     @staticmethod
     @route.route('/login', methods=["POST"])
@@ -112,9 +117,7 @@ class Routes:
                        request.json['email'],
                        None,
                        request.json['role'])
-        cmuUser.addUser()
-        return "success"
-
+        return cmuUser.addUser()
 # =========================== CMU session =============================
 # =========================== Criteria session =============================
 

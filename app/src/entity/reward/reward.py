@@ -1,27 +1,15 @@
 from json import dumps
-
 from bson import ObjectId
-
 from app.src.database import DB
 
 
 class Reward(object):
-    def __init__(self, reward_name, detail, amount, price, image):
-        self.reward_name = reward_name
+    def __init__(self, name, detail, amount, price, image):
+        self.name = name
         self.detail = detail
         self.amount = amount
         self.price = price
         self.image = image
-
-    def addRewardJson(self):
-        return {
-            '_id': ObjectId().__str__(),
-            'reward_name': self.reward_name,
-            'detail': self.detail,
-            'amount': self.amount,
-            'price': self.price,
-            'image': self.image
-        }
 
     @staticmethod
     def getAllRewards():
@@ -38,11 +26,24 @@ class Reward(object):
         return json_data
 
     def addReward(self):
-        DB.insert(collection='reward', data=self.addRewardJson())
 
+        id = ObjectId().__str__()
+        DB.insert(collection='reward', data={
+            '_id': id,
+            'name': self.name,
+            'detail': self.detail,
+            'amount': self.amount,
+            'price': self.price,
+            'image': self.image
+        })
+        return self.getRewardByID(id)
+
+    @staticmethod
     def deleteReward(id):
         DB.delete(collection='reward', data=id)
-
+        return Reward.getRewardByID(id)
+      
+    @staticmethod
     def updateReward(id,Form_RewardName,Form_Detail,Form_Amount,Form_Price,Form_Image):
         value = {"reward_name":str(Form_RewardName)}
         DB.update(collection='reward', id=id, data=value)

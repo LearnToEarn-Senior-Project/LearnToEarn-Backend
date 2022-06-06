@@ -1,6 +1,6 @@
 from json import dumps
-
-import requests
+from bson import ObjectId
+from requests import get, post
 from app.src.database import DB
 
 
@@ -12,16 +12,6 @@ class User(object):
         self.email = email
         self.googleObject = googleObject
         self.role = role
-
-    def addUserJson(self):
-        return {
-            '_id': self.id,
-            'firstname': self.firstname,
-            'lastname': self.lastname,
-            'email': self.email,
-            'google_object': self.googleObject,
-            'role': self.role
-        }
 
     @staticmethod
     def getAccessToken(code):
@@ -36,7 +26,7 @@ class User(object):
             "grant_type": "authorization_code"
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        response = requests.post(URI, data=dict(request_body), headers=headers)
+        response = post(URI, data=dict(request_body), headers=headers)
         return response.json()
 
     @staticmethod
@@ -47,15 +37,38 @@ class User(object):
             "Cache-Control": "no-cache",
             "Authorization": "Bearer " + token,
         }
-        response = requests.get(URI, headers=headers)
+        response = get(URI, headers=headers)
         return response.json()
+
+    def addUser(self):
+        if self.role is "teacher":
+            DB.insert(collection='user', data={
+                '_id': ObjectId().__str__(),
+                'firstname': self.firstname,
+                'lastname': self.lastname,
+                'email': self.email,
+                'google_object': self.googleObject,
+                'role': ["teacher"],
+            })
+        else:
+            DB.insert(collection='user', data={
+                '_id': self.id,
+                'firstname': self.firstname,
+                'lastname': self.lastname,
+                'email': self.email,
+                'google_object': self.googleObject,
+                'role': ["student"],
+                'current_token': 0
+            })
+        return self.getUser(self.id)
 
     @staticmethod
     def getUser(id):
         cursor = DB.DATABASE['user'].find({"_id": id})
         cmuUser = list(cursor)
+        try:
+            del cmuUser[0]["google_object"]
+        except:
+            pass
         json_data = dumps(cmuUser, indent=2)
         return json_data
-
-    def addUser(self):
-        DB.insert(collection='user', data=self.addUserJson())
