@@ -19,4 +19,14 @@ class Criteria(object):
             'criteria_detail': self.criteria_detail,
             'top_rank': self.top_rank,
             'submit_stack': self.submit_stack
-        })
+        }
+
+    def addCriteria(self):
+        DB.insert(collection='criteria', data=self.addJson())
+
+    @staticmethod
+    def getAllCriterias():
+        cursor = DB.DATABASE['criteria'].find()
+        criteriaList = list(cursor)
+        json_data = dumps(criteriaList, indent=2)
+        return json_data

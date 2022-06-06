@@ -1,6 +1,6 @@
 from json import dumps
 from app.src.database import DB
-from oauth2client import client
+# from oauth2client import client
 
 
 class GoogleUser(object):
