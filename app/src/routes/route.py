@@ -37,9 +37,6 @@ class Routes:
         return reward.addReward()
 
     @staticmethod
-
-    @route.route('/google_login', methods=["POST"])
-
     @route.route('/deleteReward/<reward_id>', methods=["DELETE"])
     def adminDeleteReward(reward_id):
         Reward.deleteReward(reward_id)
@@ -60,20 +57,9 @@ class Routes:
 # ========================= Google session ============================
 
     @staticmethod
-    @route.route('/google_token', methods=["POST"])
+    @route.route('/google_login', methods=["POST"])
     def getGoogleToken():
         return GoogleUser.bindGoogleAccount(request.json['id'], request.json['auth_code'])
-
-    @staticmethod
-    @route.route('/google_login', methods=["POST"])
-    def googleLogin():
-        googleUser = GoogleUser(request.json['id'],
-                                request.json['firstname'],
-                                request.json['lastname'],
-                                request.json['email'],
-                                request.json['image_url'])
-        googleUser.bindGoogleAccount()
-        return "success"
 
     @staticmethod
     @route.route('/google_logout', methods=["POST"])
@@ -87,7 +73,6 @@ class Routes:
 
 # ========================= Google session ============================
 # =========================== CMU session =============================
-
     @staticmethod
     @route.route('/getGoogleClassrooms/<string:id>', methods=["GET", "POST"])
     def getAllGoogleClassrooms(id):
@@ -122,8 +107,8 @@ class Routes:
 # =========================== Criteria session =============================
 
     @staticmethod
-    @route.route('/criterias', methods=["GET"])
-    def getAllCriterias():
+    @route.route('/criteria', methods=["GET"])
+    def getAllCriteria():
         return Criteria.getAllCriterias()
 
 # =========================== Criteria session =============================

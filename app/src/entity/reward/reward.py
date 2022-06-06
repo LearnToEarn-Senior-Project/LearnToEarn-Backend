@@ -26,7 +26,6 @@ class Reward(object):
         return json_data
 
     def addReward(self):
-
         id = ObjectId().__str__()
         DB.insert(collection='reward', data={
             '_id': id,
@@ -42,10 +41,10 @@ class Reward(object):
     def deleteReward(id):
         DB.delete(collection='reward', data=id)
         return Reward.getRewardByID(id)
-      
+
     @staticmethod
-    def updateReward(id,Form_RewardName,Form_Detail,Form_Amount,Form_Price,Form_Image):
-        value = {"reward_name":str(Form_RewardName)}
+    def updateReward(id, Form_RewardName, Form_Detail, Form_Amount, Form_Price, Form_Image):
+        value = {"reward_name": str(Form_RewardName)}
         DB.update(collection='reward', id=id, data=value)
         value = {"detail": str(Form_Detail)}
         DB.update(collection='reward', id=id, data=value)
@@ -55,4 +54,3 @@ class Reward(object):
         DB.update(collection='reward', id=id, data=value)
         value = {"image": str(Form_Image)}
         DB.update(collection='reward', id=id, data=value)
-

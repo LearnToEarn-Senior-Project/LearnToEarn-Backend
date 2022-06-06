@@ -6,7 +6,6 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
 
-
 class Classroom(object):
     @staticmethod
     def getAllClassrooms():
