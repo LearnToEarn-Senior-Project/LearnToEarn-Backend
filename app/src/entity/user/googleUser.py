@@ -1,5 +1,4 @@
 from json import dumps
-from bson import ObjectId
 from app.src.database import DB
 from oauth2client import client
 
@@ -33,7 +32,7 @@ class GoogleUser(object):
         GoogleUser.email = googleData["email"]
         GoogleUser.image_url = googleData["picture"]
         DB.update(collection='user', id=id, data={"google_object": {
-            '_id': ObjectId().__str__(),
+            '_id': googleData["sub"],
             'user_token': GoogleUser.user_token,
             'firstname': GoogleUser.firstname,
             'lastname': GoogleUser.lastname,
@@ -41,8 +40,7 @@ class GoogleUser(object):
             'image_url': GoogleUser.image_url
         }})
         cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)
-        googleUser = googleUser[0]["google_object"]
+        googleUser = list(cursor)[0]["google_object"]
         return googleUser
 
     @staticmethod
@@ -52,8 +50,7 @@ class GoogleUser(object):
     @staticmethod
     def getUserGoogleData(id):
         cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)
-        googleUser = googleUser[0]["google_object"]
+        googleUser = list(cursor)[0]["google_object"]
         if googleUser is not None:
             del googleUser["_id"]
             del googleUser["user_token"]

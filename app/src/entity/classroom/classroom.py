@@ -1,13 +1,15 @@
-import requests
 from json import dumps
 from app.src.database import DB
 from app.src.entity.user.googleUser import GoogleUser
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+
 
 
 class Classroom(object):
-
     @staticmethod
-    def getAllClassroom():
+    def getAllClassrooms():
         cursor = DB.DATABASE['classroom'].find()
         rewardList = list(cursor)
         json_data = dumps(rewardList, indent=2)
@@ -16,63 +18,75 @@ class Classroom(object):
     @staticmethod
     def getAllGoogleClassrooms(id):
         cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)
-        googleUser = googleUser[0]["google_object"]
-        googleUser = googleUser["user_token"]
-        AllClassroomURI = "https://classroom.googleapis.com/v1/courses"
-        headers = {
-            "Authorization": "Bearer " + googleUser["access_token"]
-        }
-        response = requests.get(AllClassroomURI, headers=headers)
-        if response.status_code is not 200:
-            auth_url = "https://accounts.google.com/o/oauth2/token"
-            params = {
-                "grant_type": "refresh_token",
-                "client_id": GoogleUser.client_id,
-                "client_secret": GoogleUser.client_secret,
-                "refresh_token": googleUser["refresh_token"]
-            }
-            refresh_response = requests.post(auth_url, data=dict(params))
+        googleUser = list(cursor)[0]["google_object"]["user_token"]
+        creds = Credentials.from_authorized_user_info({
+            "client_id": GoogleUser.client_id,
+            "client_secret": GoogleUser.client_secret,
+            "refresh_token": googleUser["refresh_token"]
+        })
+        service = build('classroom', 'v1', credentials=creds)
+        response = service.courses().list().execute()
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
             DB.update(collection='user', id=id, data={
-                "google_object.user_token.access_token": refresh_response.json()["access_token"]
+                "google_object.user_token.access_token": creds.__getstate__().get("token")
             })
-        data = response.json()["courses"]
+            response = service.courses().list().execute()
+        try:
+            for data in response.get("courses"):
+                if not list(DB.DATABASE['classroom'].find({"_id": data.get("id")})):
+                    teacher_object = service.courses().teachers().get(courseId=data.get("id"),
+                                                                      userId=data.get("ownerId")).execute()
+                    teacher_object = {"teacher_id": teacher_object.get("userId"),
+                                      "teacher_name": teacher_object.get("profile").get("name").get("fullName")}
 
-        for data in data:
-            if not list(DB.DATABASE['classroom'].find({"_id": data["id"]})):
-                GetAllTeacherURI = "https://classroom.googleapis.com/v1/courses/{}/teachers".format(data["id"])
-                GetAllStudentURI = "https://classroom.googleapis.com/v1/courses/{}/students".format(data["id"])
-                GetAllAssignmentURI = "https://classroom.googleapis.com/v1/courses/{}/courseWork".format(data["id"])
-                teacher_response = requests.get(GetAllTeacherURI, headers=headers)
-                student_response = requests.get(GetAllStudentURI, headers=headers)
-                assignment_response = requests.get(GetAllAssignmentURI, headers=headers)
-                try:
-                    teacher_object = teacher_response.json()["teachers"]
-                    student_object = student_response.json()["students"]
-                    assignment_object = assignment_response.json()["courseWork"]
-                except:
-                    teacher_object = {}
-                    student_object = {}
-                    assignment_object = {}
-                    pass
-                if teacher_object and student_object is not None:
-                    try:
-                        DB.insert(collection='classroom', data={
-                            '_id': data["id"],
-                            'name': data["name"],
-                            'total_member': student_object.__len__(),
-                            'environment': "google_classroom",
-                            'teacher': teacher_object,
-                            'student_list': student_object,
-                            'assignment_list': assignment_object,
-                        })
-                    except:
-                        pass
-            # print(student_object)
-            # print(teacher_object)
-            # print(assignment_object)
+                    student_object = service.courses().students().list(courseId=data.get("id")).execute().get(
+                        "students")
+                    student_object = [{"student_id": student.get("userId"),
+                                       "student_name": student.get("profile").get("name").get("fullName")} for student
+                                      in
+                                      student_object]
+                    assignment_object = service.courses().courseWork().list(courseId=data.get("id")).execute().get(
+                        "courseWork")
+
+                    for assignment in assignment_object:
+                        assignment_object_history = service.courses().courseWork().studentSubmissions().list(
+                            courseId=data.get("id"), courseWorkId=assignment.get("id")).execute().get(
+                            "studentSubmissions")
+                        state_object = [
+                            {
+                                "student_id": state.get("userId"),
+                                "state": state.get("state"),
+                                "score": state.get("assignedGrade") if state.get("assignedGrade") is not None else 0
+                            } for state in assignment_object_history
+                        ]
+
+                        assignment_object_new = [{"_id": assignment.get("id"),
+                                                  "name": assignment.get("title"),
+                                                  "due_date": assignment.get("dueDate"),
+                                                  "due_time": assignment.get("dueTime"),
+                                                  "max_point": assignment.get("maxPoints"),
+                                                  "student_submission": state_object} for assignment in
+                                                 assignment_object]
+
+                        if teacher_object and student_object is not None:
+                            DB.insert(collection='classroom', data={
+                                '_id': data.get("id"),
+                                'name': data.get("name"),
+                                'total_member': student_object.__len__(),
+                                'environment': "google_classroom",
+                                'teacher': teacher_object,
+                                'student_list': student_object,
+                                'assignment_list': assignment_object_new,
+                                'criteria': None
+                            })
+        except:
+            pass
         cursor = DB.DATABASE['classroom'].find({})
         classroom_list = list(cursor)
         json_data = dumps(classroom_list, indent=2)
-        print(json_data)
         return json_data
+
+    @staticmethod
+    def getAllMSTeamsClassrooms():
+        return None
