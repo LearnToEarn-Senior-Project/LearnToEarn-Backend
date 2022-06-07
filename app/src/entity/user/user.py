@@ -1,4 +1,3 @@
-from json import dumps
 from bson import ObjectId
 from requests import get, post
 from app.src.database import DB
@@ -27,7 +26,7 @@ class User(object):
         }
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         response = post(URI, data=dict(request_body), headers=headers)
-        return response.json()
+        return dict(response.json())
 
     @staticmethod
     def getCredentials(token):
@@ -38,7 +37,7 @@ class User(object):
             "Authorization": "Bearer " + token,
         }
         response = get(URI, headers=headers)
-        return response.json()
+        return dict(response.json())
 
     def addUser(self):
         if self.role is "teacher":
@@ -70,5 +69,4 @@ class User(object):
             del cmuUser[0]["google_object"]
         except:
             pass
-        json_data = dumps(cmuUser, indent=2)
-        return json_data
+        return cmuUser

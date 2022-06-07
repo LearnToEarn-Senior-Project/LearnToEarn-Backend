@@ -1,4 +1,3 @@
-from json import dumps
 from bson import ObjectId
 from app.src.database import DB
 
@@ -15,15 +14,19 @@ class Reward(object):
     def getAllRewards():
         cursor = DB.DATABASE['reward'].find()
         rewardList = list(cursor)
-        json_data = dumps(rewardList, indent=2)
-        return json_data
+        return rewardList
+
+    @staticmethod
+    def getRewardsPagination(page, perPage):
+        cursor = DB.DATABASE['reward'].find().skip(perPage * (page - 1)).limit(perPage)
+        rewardList = list(cursor)
+        return rewardList
 
     @staticmethod
     def getRewardByID(id):
         cursor = DB.DATABASE['reward'].find({"_id": id})
-        rewardList = list(cursor)
-        json_data = dumps(rewardList, indent=2)
-        return json_data
+        reward = list(cursor)
+        return reward
 
     def addReward(self):
         id = ObjectId().__str__()
@@ -40,17 +43,13 @@ class Reward(object):
     @staticmethod
     def deleteReward(id):
         DB.delete(collection='reward', data=id)
-        return Reward.getRewardByID(id)
 
     @staticmethod
     def updateReward(id, Form_RewardName, Form_Detail, Form_Amount, Form_Price, Form_Image):
-        value = {"reward_name": str(Form_RewardName)}
-        DB.update(collection='reward', id=id, data=value)
-        value = {"detail": str(Form_Detail)}
-        DB.update(collection='reward', id=id, data=value)
-        value = {"amount": str(Form_Amount)}
-        DB.update(collection='reward', id=id, data=value)
-        value = {"price": str(Form_Price)}
-        DB.update(collection='reward', id=id, data=value)
-        value = {"image": str(Form_Image)}
-        DB.update(collection='reward', id=id, data=value)
+        DB.update(collection='reward', id=id, data={"_id": id,
+                                                    'name': Form_RewardName,
+                                                    'detail': Form_Detail,
+                                                    'amount': Form_Amount,
+                                                    'price': Form_Price,
+                                                    'image': Form_Image})
+        return Reward.getRewardByID(id)
