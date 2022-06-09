@@ -1,5 +1,3 @@
-from json import dumps
-
 from bson import ObjectId
 
 from app.src.database import DB
@@ -21,7 +19,5 @@ class Criteria(object):
 
     @staticmethod
     def getAllCriteria():
-        cursor = DB.DATABASE['criteria'].find()
-        criteriaList = list(cursor)
-        json_data = dumps(criteriaList, indent=2)
-        return json_data
+        criteriaList = list(DB.DATABASE['criteria'].find())
+        return criteriaList

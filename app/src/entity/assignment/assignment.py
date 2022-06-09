@@ -1,7 +1,3 @@
-from json import dumps
-
-from bson import ObjectId
-
 from app.src.database import DB
 
 
@@ -13,7 +9,5 @@ class Assignment(object):
 
     @staticmethod
     def getAllAssignments():
-        cursor = DB.DATABASE['assignment'].find()
-        assignmentList = list(cursor)
-        json_data = dumps(assignmentList, indent=2)
-        return json_data
+        assignmentList = list(DB.DATABASE['assignment'].find())
+        return assignmentList

@@ -38,8 +38,7 @@ class GoogleUser(object):
             'email': GoogleUser.email,
             'image_url': GoogleUser.image_url
         }})
-        cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)[0]["google_object"]
+        googleUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]
         return googleUser
 
     @staticmethod
@@ -48,8 +47,7 @@ class GoogleUser(object):
 
     @staticmethod
     def getUserGoogleData(id):
-        cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)[0]["google_object"]
+        googleUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]
         if googleUser is not None:
             del googleUser["_id"]
             del googleUser["user_token"]
