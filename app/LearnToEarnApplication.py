@@ -1,6 +1,8 @@
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.src.entity.token.token import Token
 from src.database import DB
 from app.src.entity.classroom.classroom import Classroom
 from app.src.entity.reward.reward import Reward
@@ -26,9 +28,9 @@ DB()
 
 
 # ========================= Reward session ============================
-@app.get("/rewards")
-async def getAllRewards():
-    return Reward.getRewardsPagination(2, 8)
+@app.get("/rewards/page={page}")
+async def getAllRewardsWithPagination(page: int):
+    return Reward.getRewardsPagination(page, 10)
 
 
 @app.get('/reward/{reward_id}')
@@ -38,11 +40,15 @@ async def getRewardByID(reward_id: str):
 
 @app.post('/addReward')
 async def adminAddReward(reward: Request):
+    try:
+        image = dict(await reward.json())['image']
+    except:
+        image = None
     reward = Reward(dict(await reward.json())["name"],
                     dict(await reward.json())["detail"],
                     dict(await reward.json())['amount'],
-                    dict(await reward.json())['price'],
-                    dict(await reward.json())['image'])
+                    dict(await reward.json())['price'], image)
+
     return reward.addReward()
 
 
@@ -52,11 +58,20 @@ async def adminDeleteReward(reward_id: str):
     return "Delete reward successfully!!"
 
 
+@app.post('/uploadFile')
+async def uploadImage(file: UploadFile = File(...)):
+    return Reward.getImgPath(file.filename, await file.read())
+
+
 @app.patch('/updateReward/{reward_id}')
 async def adminUpdateReward(reward_id: str, reward: Request):
+    try:
+        image = dict(await reward.json())['image']
+    except:
+        image = list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))[0]["image"]
     return Reward.updateReward(reward_id, dict(await reward.json())["name"], dict(await reward.json())["detail"],
                                dict(await reward.json())["amount"], dict(await reward.json())["price"],
-                               dict(await reward.json())["image"])
+                               image)
 
 
 # ========================= End Reward session ============================
@@ -101,7 +116,7 @@ async def CMUOAuthGetUserByID(id: str):
 
 @app.post('/addUser')
 async def CMUOAuthSaveUser(user: Request):
-    cmuUser = User(dict(await user.json())["name"],
+    cmuUser = User(dict(await user.json())['id'],
                    dict(await user.json())['firstname'],
                    dict(await user.json())['lastname'],
                    dict(await user.json())['email'],
@@ -110,15 +125,58 @@ async def CMUOAuthSaveUser(user: Request):
     return cmuUser.addUser()
 
 
+@app.get('/getRole/{id}')
+async def getUserRole(id: str):
+    return list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0].get("role")
+
+
+@app.get('/swapRole/{id}')
+async def swapRole(id: str):
+    data = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]
+    arr = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0].get("role")
+    tmp = arr[0]
+    arr[0] = arr[1]
+    arr[1] = tmp
+    DB.update(collection='user', id=id, data={
+        '_id': id,
+        'firstname': data.get("firstname"),
+        'lastname': data.get("lastname"),
+        'email': data.get("email"),
+        'google_object': data.get("google_object"),
+        'role': arr,
+        'current_token': data.get("current_token")
+    })
+    return arr
+
+
 # =========================== CMU session =============================
 # =========================== Criteria session =============================
-
 @app.get('/criteria')
 async def getAllCriteria():
     return Criteria.getAllCriteria()
 
 
 # =========================== Criteria session =============================
+# =========================== Token session =============================
+
+@app.post('/addToken')
+async def addToken(add: Request):
+    token = Token(dict(await add.json())['amount'])
+    return token.addToken()
+
+
+@app.get('/getAllToken')
+async def getToken():
+    print(DB.DATABASE['token'].find({"_id": "1"}).limit(1)[0]["amount"])
+    return DB.DATABASE['token'].find({"_id": "1"}).limit(1)[0]["amount"]
+
+
+@app.get('/studentToken/{id}')
+async def getStudentToken(id: str):
+    return Token.getStudentToken(id)
+
+
+# =========================== Token session =============================
 
 if __name__ == "__main__":
     uvicorn.run("LearnToEarnApplication:app", reload=True, port=5000, workers=mp.cpu_count())

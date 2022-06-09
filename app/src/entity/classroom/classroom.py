@@ -1,4 +1,3 @@
-from json import dumps
 from app.src.database import DB
 from app.src.entity.user.googleUser import GoogleUser
 from google.oauth2.credentials import Credentials
@@ -9,15 +8,12 @@ from googleapiclient.discovery import build
 class Classroom(object):
     @staticmethod
     def getAllClassrooms():
-        cursor = DB.DATABASE['classroom'].find()
-        rewardList = list(cursor)
-        json_data = dumps(rewardList, indent=2)
-        return json_data
+        classroomList = list(DB.DATABASE['classroom'].find())
+        return classroomList
 
     @staticmethod
     def getAllGoogleClassrooms(id):
-        cursor = DB.DATABASE['user'].find({"_id": id})
-        googleUser = list(cursor)[0]["google_object"]["user_token"]
+        googleUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]["user_token"]
         creds = Credentials.from_authorized_user_info({
             "client_id": GoogleUser.client_id,
             "client_secret": GoogleUser.client_secret,
@@ -33,7 +29,7 @@ class Classroom(object):
             response = service.courses().list().execute()
         try:
             for data in response.get("courses"):
-                if not list(DB.DATABASE['classroom'].find({"_id": data.get("id")})):
+                if not list(DB.DATABASE['classroom'].find({"_id": data.get("id")}).limit(1)):
                     teacher_object = service.courses().teachers().get(courseId=data.get("id"),
                                                                       userId=data.get("ownerId")).execute()
                     teacher_object = {"teacher_id": teacher_object.get("userId"),
@@ -81,10 +77,8 @@ class Classroom(object):
                             })
         except:
             pass
-        cursor = DB.DATABASE['classroom'].find({})
-        classroom_list = list(cursor)
-        json_data = dumps(classroom_list, indent=2)
-        return json_data
+        classroom_list = list(DB.DATABASE['classroom'].find({}))
+        return classroom_list
 
     @staticmethod
     def getAllMSTeamsClassrooms():

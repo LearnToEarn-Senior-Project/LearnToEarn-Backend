@@ -40,7 +40,7 @@ class User(object):
         return dict(response.json())
 
     def addUser(self):
-        if self.role is "teacher":
+        if self.role == "teacher":
             DB.insert(collection='user', data={
                 '_id': ObjectId().__str__(),
                 'firstname': self.firstname,
@@ -63,10 +63,11 @@ class User(object):
 
     @staticmethod
     def getUser(id):
-        cursor = DB.DATABASE['user'].find({"_id": id})
-        cmuUser = list(cursor)
+        cmuUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))
         try:
             del cmuUser[0]["google_object"]
+            del cmuUser[0]["current_token"]
+            del cmuUser[0]["role"]
         except:
             pass
         return cmuUser
