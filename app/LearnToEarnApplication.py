@@ -94,9 +94,9 @@ async def googleGetData(id: str):
 
 # ========================= Google session ============================
 # =========================== CMU session =============================
-@app.get('/getGoogleClassrooms/{id}')
-async def getAllGoogleClassrooms(id: str):
-    return Classroom.getAllGoogleClassrooms(id)
+@app.get('/getGoogleClassrooms/{id}/page={page}')
+async def getAllGoogleClassrooms(id: str, page: int):
+    return Classroom.getAllGoogleClassrooms(id, page, 4)
 
 
 @app.post('/login/{code}')
