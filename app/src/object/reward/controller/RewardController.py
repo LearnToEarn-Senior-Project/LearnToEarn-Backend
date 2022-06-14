@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-
+from app.src.server.database import DB
 from app.src.object.reward.services.RewardServices import RewardServices
 
 router = APIRouter()
@@ -17,18 +17,29 @@ async def getByID(reward_id: str):
 
 @router.post('/addReward')
 async def add(reward: Request):
+    try:
+        image_url = dict(await reward.json())['image']
+    except:
+        image_url = None
     return RewardServices.add(dict(await reward.json())["name"],
                               dict(await reward.json())["detail"],
                               dict(await reward.json())['amount'],
                               dict(await reward.json())['price'],
-                              dict(await reward.json())['image'])
+                              image_url)
 
 
 @router.patch('/updateReward/{reward_id}')
 async def adminUpdateReward(reward_id: str, reward: Request):
-    return RewardServices.update(reward_id, dict(await reward.json())["name"], dict(await reward.json())["detail"],
-                                 dict(await reward.json())["amount"], dict(await reward.json())["price"],
-                                 dict(await reward.json())['image'])
+    try:
+        image_url = dict(await reward.json())['image']
+    except:
+        image_url = list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))[0]["image"]
+    return RewardServices.update(reward_id,
+                                 dict(await reward.json())["name"],
+                                 dict(await reward.json())["detail"],
+                                 dict(await reward.json())["amount"],
+                                 dict(await reward.json())["price"],
+                                 image_url)
 
 
 @router.delete('/deleteReward/{reward_id}')

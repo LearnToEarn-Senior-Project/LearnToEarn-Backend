@@ -17,16 +17,11 @@ class RewardServices:
         return reward_object
 
     @staticmethod
-    def getByID(id):
-        reward = list(DB.DATABASE['reward'].find({"_id": id}).limit(1))
-        return reward
+    def getByID(reward_id):
+        return list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))
 
     @staticmethod
     def add(name, detail, amount, price, image_url):
-        try:
-            image_url = image_url
-        except:
-            image_url = None
         reward = Reward(name, detail, amount, price, image_url)
         id = ObjectId().__str__()
         DB.insert(collection='reward', data={
@@ -40,21 +35,17 @@ class RewardServices:
         return RewardServices.getByID(id)
 
     @staticmethod
-    def delete(id):
-        DB.delete(collection='reward', data=id)
+    def delete(reward_id):
+        DB.delete(collection='reward', data=reward_id)
         return "Delete reward successfully!!"
 
     @staticmethod
-    def update(id, name, detail, amount, price, image_url):
-        try:
-            image_url = image_url
-        except:
-            image_url = list(DB.DATABASE['reward'].find({"_id": id}).limit(1))[0]["image"]
+    def update(reward_id, name, detail, amount, price, image_url):
         reward = Reward(name, detail, amount, price, image_url)
-        DB.update(collection='reward', id=id, data={
+        DB.update(collection='reward', id=reward_id, data={
             'name': reward.name,
             'detail': reward.detail,
             'amount': reward.amount,
             'price': reward.price,
             'image': reward.image_url})
-        return RewardServices.getByID(id)
+        return RewardServices.getByID(reward_id)

@@ -7,7 +7,7 @@ from app.src.resources import Google
 class GoogleUserServices:
 
     @staticmethod
-    def bindAccount(id, authCode):
+    def bindAccount(user_id, authCode):
         auth_code = authCode
         scope = "profile " \
                 "email " \
@@ -23,7 +23,7 @@ class GoogleUserServices:
         googleData = credentials.id_token
         googleObject = GoogleUser(googleData["sub"], user_token, googleData["given_name"], googleData["family_name"],
                                   googleData["email"], googleData["picture"])
-        DB.update(collection='user', id=id, data={"google_object": {
+        DB.update(collection='user', id=user_id, data={"google_object": {
             '_id': googleObject.id,
             'user_token': googleObject.user_token,
             'firstname': googleObject.firstname,
@@ -31,18 +31,17 @@ class GoogleUserServices:
             'email': googleObject.email,
             'image_url': googleObject.image_url
         }})
-        googleUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]
+        googleUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
         return googleUser
 
     @staticmethod
-    def unbindAccount(id):
-        DB.update(collection='user', id=id, data={"google_object": None})
+    def unbindAccount(user_id):
+        DB.update(collection='user', id=user_id, data={"google_object": None})
         return "Unbind success"
 
     @staticmethod
-    def get(id):
-        googleUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]
+    def get(user_id):
+        googleUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
         if googleUser is not None:
-            del googleUser["_id"]
             del googleUser["user_token"]
         return googleUser

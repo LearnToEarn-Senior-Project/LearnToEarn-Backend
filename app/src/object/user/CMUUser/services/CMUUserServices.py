@@ -33,8 +33,8 @@ class CMUUserServices:
         return dict(response.json())
 
     @staticmethod
-    def add(id, firstname, lastname, email, google_object, role):
-        cmuUser = CMUUser(id, firstname, lastname, email, google_object, role)
+    def add(user_id, firstname, lastname, email, google_object, role):
+        cmuUser = CMUUser(user_id, firstname, lastname, email, google_object, role)
         if role == "teacher":
             DB.insert(collection='user', data={
                 '_id': cmuUser.id,
@@ -57,8 +57,8 @@ class CMUUserServices:
         return CMUUserServices.get(cmuUser.id)
 
     @staticmethod
-    def get(id):
-        cmuUser = list(DB.DATABASE['user'].find({"_id": id}).limit(1))
+    def get(user_id):
+        cmuUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))
         try:
             del cmuUser[0]["google_object"]
             del cmuUser[0]["current_token"]
@@ -68,18 +68,18 @@ class CMUUserServices:
         return cmuUser
 
     @staticmethod
-    def getRole(id):
-        return list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0].get("role")
+    def getRole(user_id):
+        return list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0].get("role")
 
     @staticmethod
-    def swapRole(id):
-        data = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]
-        array = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0].get("role")
+    def swapRole(user_id):
+        data = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]
+        array = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0].get("role")
         tmp = array[0]
         array[0] = array[1]
         array[1] = tmp
-        DB.update(collection='user', id=id, data={
-            '_id': id,
+        DB.update(collection='user', id=user_id, data={
+            '_id': user_id,
             'firstname': data.get("firstname"),
             'lastname': data.get("lastname"),
             'email': data.get("email"),

@@ -20,13 +20,13 @@ class TokenServices:
         return token
 
     @staticmethod
-    def getStudentToken(id):
+    def getStudentToken(user_id):
         try:
-            studentToken = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["current_token"]
+            studentToken = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["current_token"]
         except:
             studentToken = []
         return studentToken
 
     @staticmethod
-    def getTokenAmount():
+    def getAmount():
         return DB.DATABASE['token'].find({"_id": "1"}).limit(1)[0]["amount"]

@@ -12,7 +12,7 @@ async def addToken(add: Request):
 
 @router.get('/getAllToken')
 async def getTokenAmount():
-    return TokenServices.getTokenAmount()
+    return TokenServices.getAmount()
 
 
 @router.get('/studentToken/{id}')

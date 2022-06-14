@@ -16,5 +16,9 @@ class DB(object):
         DB.DATABASE[collection].update_one({"_id": str(id)}, {"$set": data})
 
     @staticmethod
+    def upsert(collection, id, data):
+        DB.DATABASE[collection].update_one({"_id": str(id)}, {"$set": data}, upsert=True)
+
+    @staticmethod
     def delete(collection, data):
         DB.DATABASE[collection].delete_one({"_id": data})

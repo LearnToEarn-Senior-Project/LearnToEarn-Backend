@@ -1,13 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.src.object.token.controller import TokenController
 from app.src.object.reward.controller import RewardController
 from app.src.object.utility.controller import UtilityController
 from app.src.object.criteria.controller import CriteriaController
 from app.src.object.user.CMUUser.controller import CMUUserController
 from app.src.object.user.GoogleUser.controller import GoogleUserController
-from app.src.object.classroom.GoogleClassroom.Controller import GoogleClassroomController
+from app.src.object.classroom.classroom.GoogleClassroom.Controller import GoogleClassroomController
 
 import multiprocessing as mp
 
