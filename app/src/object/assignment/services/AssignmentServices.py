@@ -6,7 +6,7 @@ from pymongo import UpdateOne
 class AssignmentServices:
 
     @staticmethod
-    def updateAndAdd(id, course_id):
+    def getAll(id, course_id):
         submitList = None
         submission = None
         google = Google.GoogleCredential(id)
