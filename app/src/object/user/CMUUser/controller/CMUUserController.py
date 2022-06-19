@@ -26,7 +26,6 @@ async def addUser(user: Request):
                                dict(await user.json())['firstname'],
                                dict(await user.json())['lastname'],
                                dict(await user.json())['email'],
-                               None,
                                dict(await user.json())['role'])
 
 

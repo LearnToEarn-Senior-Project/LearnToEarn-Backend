@@ -1,4 +1,4 @@
-class Reward(object):
+class RewardDAO(object):
     __slots__ = "name", "detail", "amount", "price", "image_url"
 
     def __init__(self, name, detail, amount, price, image_url):

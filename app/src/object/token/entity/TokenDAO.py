@@ -1,4 +1,4 @@
-class Token(object):
+class TokenDAO(object):
     __slots__ = "amount"
 
     def __init__(self, amount):

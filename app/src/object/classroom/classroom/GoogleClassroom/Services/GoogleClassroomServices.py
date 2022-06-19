@@ -7,7 +7,7 @@ from pymongo import UpdateOne
 class GoogleClassroomServices:
 
     @staticmethod
-    def getAllPagination(user_id, page, perPage):
+    def getAllPagination(user_id, page):
         try:
             google = Google.GoogleCredential(user_id)
             googleUserId = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]["_id"]
@@ -36,7 +36,7 @@ class GoogleClassroomServices:
             DB.DATABASE['classroom'].create_index([("user_id", 1)])
             totalClassroom = len(list(DB.DATABASE['classroom'].find({"user_id": [googleUserId]})))
             classroom_list = list(
-                DB.DATABASE['classroom'].find({"user_id": [googleUserId]}).skip(perPage * (page - 1)).limit(perPage)
+                DB.DATABASE['classroom'].find({"user_id": [googleUserId]}).skip(4 * (page - 1)).limit(4)
             )
             classroom = {
                 "total_classrooms": totalClassroom,
@@ -51,16 +51,19 @@ class GoogleClassroomServices:
 
     @staticmethod
     def getById(user_id, course_id):
-        AssignmentServices.updateAndAdd(user_id, course_id)
-        DB.DATABASE['classroom'].drop_indexes()
-        DB.DATABASE['classroom'].create_index([("_id", 1)])
-        return list(DB.DATABASE['classroom'].aggregate([{
-            "$match": {"_id": course_id}
-        }, {
-            "$lookup": {
-                "from": 'assignment',
-                "localField": '_id',
-                "foreignField": 'course_id',
-                "as": "assignment_list",
-            }
-        }, ]))[0]
+        try:
+            AssignmentServices.getAll(user_id, course_id)
+            DB.DATABASE['classroom'].drop_indexes()
+            DB.DATABASE['classroom'].create_index([("_id", 1)])
+            return list(DB.DATABASE['classroom'].aggregate([{
+                "$match": {"_id": course_id}
+            }, {
+                "$lookup": {
+                    "from": 'assignment',
+                    "localField": '_id',
+                    "foreignField": 'course_id',
+                    "as": "assignment_list",
+                }
+            }, ]))[0]
+        except:
+            return "The classroom is not available for this ID or the classroom ID is not correct"
