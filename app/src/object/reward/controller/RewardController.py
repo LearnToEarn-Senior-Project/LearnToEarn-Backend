@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/rewards/page={page}")
 async def getAllPagination(page: int):
-    return RewardServices.getAllPagination(page, 10)
+    return RewardServices.getAllPagination(page)
 
 
 @router.get('/reward/{reward_id}')
@@ -23,8 +23,8 @@ async def add(reward: Request):
         image_url = None
     return RewardServices.add(dict(await reward.json())["name"],
                               dict(await reward.json())["detail"],
-                              dict(await reward.json())['amount'],
-                              dict(await reward.json())['price'],
+                              int(dict(await reward.json())['amount']),
+                              float(dict(await reward.json())['price']),
                               image_url)
 
 

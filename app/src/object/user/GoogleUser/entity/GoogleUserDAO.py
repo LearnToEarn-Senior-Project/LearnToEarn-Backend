@@ -1,4 +1,4 @@
-class GoogleUser(object):
+class GoogleUserDAO(object):
     __slots__ = "id", "user_token", "firstname", "lastname", "email", "image_url"
 
     def __init__(self, id, user_token, firstname, lastname, email, image_url):

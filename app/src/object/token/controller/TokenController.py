@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.post('/addToken')
 async def addToken(add: Request):
-    return TokenServices.addToken(dict(await add.json())['amount'])
+    return TokenServices.add(dict(await add.json())['amount'])
 
 
 @router.get('/getAllToken')
