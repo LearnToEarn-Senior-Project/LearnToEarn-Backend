@@ -1,15 +1,19 @@
 from bson import ObjectId
+from starlette.responses import Response
+
 from app.src.server.database import DB
 from app.src.object.reward.entity.RewardDAO import RewardDAO
+from srsly.ujson import ujson
 
 
 class RewardServices:
     @staticmethod
     def getAllPagination(page):
         try:
+            perPage = 10
             if page > 0:
                 totalRewards = len(list(DB.DATABASE['reward'].find()))
-                rewardList = list(DB.DATABASE['reward'].find().skip(10 * (page - 1)).limit(10))
+                rewardList = list(DB.DATABASE['reward'].find().skip(perPage * (page - 1)).limit(perPage))
                 reward_object = {
                     "total_rewards": totalRewards,
                     "reward_list": rewardList
@@ -20,7 +24,7 @@ class RewardServices:
                     "total_classrooms": 0,
                     "classroom_list": []
                 }
-                return reward_object
+                return Response(content=ujson.dumps(reward_object))
         except:
             reward_object = {
                 "total_classrooms": 0,
@@ -30,7 +34,7 @@ class RewardServices:
 
     @staticmethod
     def getByID(reward_id):
-        return list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))
+        return Response(content=ujson.dumps(list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))))
 
     @staticmethod
     def add(name, detail, amount, price, image_url):
