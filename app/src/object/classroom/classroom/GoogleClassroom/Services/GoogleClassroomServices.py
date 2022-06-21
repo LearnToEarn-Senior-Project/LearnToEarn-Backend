@@ -1,7 +1,8 @@
+import asyncio
+
 import numpy as np
 from orjson import orjson
 from starlette.responses import Response
-
 from app.src.object.assignment.services.AssignmentServices import AssignmentServices
 from app.src.resources import Google
 from app.src.server.database import DB
@@ -11,7 +12,7 @@ from pymongo import UpdateOne
 class GoogleClassroomServices:
 
     @staticmethod
-    def getAllPagination(user_id, page):
+    async def getAllPagination(user_id, page):
         try:
             perPage = 4
             google = Google.GoogleCredential(user_id)
@@ -27,7 +28,7 @@ class GoogleClassroomServices:
                     "teacher": teacher.get("profile").get("name").get("fullName"),
                     "environment": "google_classroom",
                 }}, upsert=True)], axis=0)
-                if len(DATA) == 1000:
+                if len(DATA) == 4:
                     DB.DATABASE['classroom'].bulk_write(DATA, ordered=False)
                     DATA = np.array([])
             if len(DATA) > 0:
@@ -49,7 +50,7 @@ class GoogleClassroomServices:
         return Response(content=orjson.dumps(classroom))
 
     @staticmethod
-    def getById(user_id, course_id):
+    async def getById(user_id, course_id):
         try:
             AssignmentServices.getAll(user_id, course_id)
             DB.DATABASE['classroom'].drop_indexes()
