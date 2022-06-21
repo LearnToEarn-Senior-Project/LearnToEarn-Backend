@@ -1,5 +1,5 @@
 import numpy as np
-from srsly.ujson import ujson
+from orjson import orjson
 from starlette.responses import Response
 
 from app.src.resources import Google
@@ -17,7 +17,8 @@ class AssignmentServices:
             google = Google.GoogleCredential(id)
             googleUserId = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]["_id"]
             DATA = np.array([])
-            for assignment in google.courses().courseWork().list(courseId=course_id).execute().get("courseWork"):
+            for assignment in google.courses().courseWork().list(courseId=course_id).execute().get(
+                    "courseWork").items():
                 arr = np.array([])
                 try:
                     submission = google.courses().courseWork().studentSubmissions().list(
@@ -49,6 +50,6 @@ class AssignmentServices:
                     DATA = np.array([])
             if len(DATA) > 0:
                 DB.DATABASE['assignment'].bulk_write(DATA, ordered=False)
-            return Response(content=ujson.dumps(list(DB.DATABASE['assignment'].find({"course_id": course_id}))))
+            return Response(content=orjson.dumps(list(DB.DATABASE['assignment'].find({"course_id": course_id}))))
         except:
             return "The assignment is not available for this ID or the classroom ID is not correct"

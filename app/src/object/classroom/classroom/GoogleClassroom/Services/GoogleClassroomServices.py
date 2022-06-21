@@ -1,5 +1,5 @@
 import numpy as np
-from srsly.ujson import ujson
+from orjson import orjson
 from starlette.responses import Response
 
 from app.src.object.assignment.services.AssignmentServices import AssignmentServices
@@ -27,7 +27,7 @@ class GoogleClassroomServices:
                     "teacher": teacher.get("profile").get("name").get("fullName"),
                     "environment": "google_classroom",
                 }}, upsert=True)], axis=0)
-                if len(DATA) == 4:
+                if len(DATA) == 1000:
                     DB.DATABASE['classroom'].bulk_write(DATA, ordered=False)
                     DATA = np.array([])
             if len(DATA) > 0:
@@ -46,7 +46,7 @@ class GoogleClassroomServices:
                 "total_classrooms": 0,
                 "classroom_list": []
             }
-        return Response(content=ujson.dumps(classroom))
+        return Response(content=orjson.dumps(classroom))
 
     @staticmethod
     def getById(user_id, course_id):

@@ -1,9 +1,9 @@
 from bson import ObjectId
+from orjson import orjson
 from starlette.responses import Response
 
 from app.src.server.database import DB
 from app.src.object.reward.entity.RewardDAO import RewardDAO
-from srsly.ujson import ujson
 
 
 class RewardServices:
@@ -24,7 +24,7 @@ class RewardServices:
                     "total_classrooms": 0,
                     "classroom_list": []
                 }
-                return Response(content=ujson.dumps(reward_object))
+                return Response(content=orjson.dumps(reward_object))
         except:
             reward_object = {
                 "total_classrooms": 0,
@@ -34,7 +34,7 @@ class RewardServices:
 
     @staticmethod
     def getByID(reward_id):
-        return Response(content=ujson.dumps(list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))))
+        return Response(content=orjson.dumps(list(DB.DATABASE['reward'].find({"_id": reward_id}).limit(1))))
 
     @staticmethod
     def add(name, detail, amount, price, image_url):
