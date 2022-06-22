@@ -1,6 +1,3 @@
-import asyncio
-
-import numpy as np
 from orjson import orjson
 from starlette.responses import Response
 from app.src.object.assignment.services.AssignmentServices import AssignmentServices
@@ -12,25 +9,25 @@ from pymongo import UpdateOne
 class GoogleClassroomServices:
 
     @staticmethod
-    async def getAllPagination(user_id, page):
+    def getAllPagination(user_id, page):
         try:
             perPage = 4
             google = Google.GoogleCredential(user_id)
             googleUserId = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]["_id"]
             response = google.courses().list().execute()
-            DATA = np.array([])
+            DATA = []
             for data in response.get("courses"):
                 teacher = google.courses().teachers().get(courseId=data.get("id"), userId=data.get("ownerId")).execute()
-                np.append(DATA, [UpdateOne({"_id": data.get("id")}, {"$set": {
+                DATA.append(UpdateOne({"_id": data.get("id")}, {"$set": {
                     "_id": data.get("id"),
                     "name": data.get("name"),
                     "user_id": [googleUserId],
                     "teacher": teacher.get("profile").get("name").get("fullName"),
                     "environment": "google_classroom",
-                }}, upsert=True)], axis=0)
+                }}, upsert=True))
                 if len(DATA) == 4:
                     DB.DATABASE['classroom'].bulk_write(DATA, ordered=False)
-                    DATA = np.array([])
+                    DATA = []
             if len(DATA) > 0:
                 DB.DATABASE['classroom'].bulk_write(DATA, ordered=False)
 
@@ -50,7 +47,7 @@ class GoogleClassroomServices:
         return Response(content=orjson.dumps(classroom))
 
     @staticmethod
-    async def getById(user_id, course_id):
+    def getById(user_id, course_id):
         try:
             AssignmentServices.getAll(user_id, course_id)
             DB.DATABASE['classroom'].drop_indexes()
