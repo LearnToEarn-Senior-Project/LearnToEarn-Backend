@@ -8,7 +8,7 @@ class UtilityServices:
     def getImgPath(image_name, content):
         try:
             byte = io.BytesIO(content)
-            cred = credentials.Certificate("../app/src/resources/learntoearn-cred.json")
+            cred = credentials.Certificate("../app/src/resources/LearnToEarn-Firebase-Credential.json")
             try:
                 initialize_app(cred, {'storageBucket': 'learntoearn-350914.appspot.com'})
             except:

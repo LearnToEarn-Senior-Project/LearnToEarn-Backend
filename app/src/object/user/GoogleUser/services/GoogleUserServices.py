@@ -10,12 +10,10 @@ class GoogleUserServices:
     def bindAccount(user_id, authCode):
         try:
             auth_code = authCode
-            scope = "profile " \
-                    "email " \
-                    "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly " \
-                    "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly " \
-                    "https://www.googleapis.com/auth/classroom.courses.readonly " \
-                    "https://www.googleapis.com/auth/classroom.rosters.readonly"
+            scope = ["https://www.googleapis.com/auth/classroom.student-submissions.students.readonly",
+                "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly",
+                "https://www.googleapis.com/auth/classroom.courses.readonly",
+                "https://www.googleapis.com/auth/classroom.rosters.readonly"]
             credentials = client.credentials_from_code(Google.client_id, Google.client_secret, scope, auth_code)
             user_token = {
                 "access_token": credentials.access_token,
@@ -23,8 +21,8 @@ class GoogleUserServices:
             }
             googleData = credentials.id_token
             googleObject = GoogleUserDAO(googleData["sub"], user_token, googleData["given_name"],
-                                      googleData["family_name"],
-                                      googleData["email"], googleData["picture"])
+                                         googleData["family_name"],
+                                         googleData["email"], googleData["picture"])
             DB.update(collection='user', id=user_id, data={"google_object": {
                 '_id': googleObject.id,
                 'user_token': googleObject.user_token,

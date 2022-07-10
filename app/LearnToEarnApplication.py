@@ -1,23 +1,23 @@
 import uvicorn
+import multiprocessing as mp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.src.object.assignment.controller import AssignmentController
 from app.src.object.token.controller import TokenController
 from app.src.object.reward.controller import RewardController
 from app.src.object.utility.controller import UtilityController
 from app.src.object.criteria.controller import CriteriaController
 from app.src.object.user.CMUUser.controller import CMUUserController
+from app.src.object.assignment.controller import AssignmentController
 from app.src.object.user.GoogleUser.controller import GoogleUserController
 from app.src.object.classroom.classroom.GoogleClassroom.Controller import GoogleClassroomController
-
-import multiprocessing as mp
 
 app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://localhost:5000"
+    "http://localhost:5000",
+    "http://127.0.0.1:5000/",
+    "http://127.0.0.1:3000/",
 ]
 app.add_middleware(
     CORSMiddleware,
