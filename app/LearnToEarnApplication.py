@@ -9,7 +9,7 @@ from app.src.object.criteria.controller import CriteriaController
 from app.src.object.user.CMUUser.controller import CMUUserController
 from app.src.object.assignment.controller import AssignmentController
 from app.src.object.user.GoogleUser.controller import GoogleUserController
-from app.src.object.classroom.classroom.GoogleClassroom.Controller import GoogleClassroomController
+from app.src.object.classroom.controller import GoogleClassroomController
 
 app = FastAPI()
 origins = [

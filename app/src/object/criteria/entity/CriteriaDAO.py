@@ -1,6 +1,8 @@
 class Criteria(object):
-    __slots__ = "name", "top_rank", "submit_stack"
+    __slots__ = "course_id", "first", "second", "third"
 
-    def __init__(self, name, submit_stack):
-        self.name: str = name
-        self.submit_stack: int = submit_stack
+    def __init__(self, course_id, first, second, third):
+        self.course_id: str = course_id
+        self.first: bool = first
+        self.second: object = second
+        self.third: bool = third

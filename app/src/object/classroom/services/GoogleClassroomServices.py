@@ -21,9 +21,8 @@ class GoogleClassroomServices:
                 DATA.append(UpdateOne({"_id": data.get("id")}, {"$set": {
                     "_id": data.get("id"),
                     "name": data.get("name"),
-                    "user_id": [googleUserId],
                     "teacher": teacher.get("profile").get("name").get("fullName"),
-                    "environment": "google_classroom",
+                    "user_id": [googleUserId],
                 }}, upsert=True))
                 if len(DATA) == 4:
                     DB.DATABASE['classroom'].bulk_write(DATA, ordered=False)
@@ -47,7 +46,7 @@ class GoogleClassroomServices:
         return Response(content=orjson.dumps(classroom))
 
     @staticmethod
-    def getById(user_id, course_id):
+    def getByIdWithAssignment(user_id, course_id):
         try:
             AssignmentServices.getAll(user_id, course_id)
             DB.DATABASE['classroom'].drop_indexes()
@@ -62,5 +61,17 @@ class GoogleClassroomServices:
                     "as": "assignment_list",
                 }
             }, ]))[0]
+        except:
+            return "The classroom is not available for this ID or the classroom ID is not correct"
+
+    @staticmethod
+    def getById(course_id):
+        try:
+            DB.DATABASE['classroom'].drop_indexes()
+            DB.DATABASE['classroom'].create_index([("_id", 1)])
+            classroom = list(DB.DATABASE['classroom'].find({"_id": course_id}).limit(1))[0]
+            del classroom['teacher']
+            del classroom['user_id']
+            return classroom
         except:
             return "The classroom is not available for this ID or the classroom ID is not correct"

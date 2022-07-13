@@ -31,8 +31,7 @@ class GoogleUserServices:
                 'email': googleObject.email,
                 'image_url': googleObject.image_url
             }})
-            googleUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
-            return googleUser
+            return list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
         except:
             return "The user is not found or got some error"
 
