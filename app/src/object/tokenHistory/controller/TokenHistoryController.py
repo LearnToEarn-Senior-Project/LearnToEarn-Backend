@@ -1,20 +1,14 @@
 from fastapi import APIRouter, Request
 
-from app.src.object.token.services.TokenServices import TokenServices
+from app.src.object.tokenHistory.services.TokenHistoryServices import TokenHistoryServices
 
 router = APIRouter()
 
 
-@router.post('/addToken')
-async def addToken(add: Request):
-    return TokenServices.add(dict(await add.json())['amount'])
-
-
-@router.get('/getAllToken')
-async def getTokenAmount():
-    return TokenServices.getAmount()
-
-
-@router.get('/studentToken/{id}')
-async def getStudentToken(id: str):
-    return TokenServices.getStudentToken(id)
+@router.post('/addTokenHistory')
+async def addTokenTansactionHistory(tokenHistory: Request):
+    return TokenHistoryServices.add(dict(await tokenHistory.json())["date"],
+                                    float(dict(await tokenHistory.json())["amount"]),
+                                    int(dict(await tokenHistory.json())['student_id']),
+                                    int(dict(await tokenHistory.json())['reward_id']),
+                                   )
