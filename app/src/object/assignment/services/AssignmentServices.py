@@ -8,31 +8,53 @@ from pymongo import UpdateOne
 class AssignmentServices:
 
     @staticmethod
-    def getAll(id, course_id):
+    def getAll(user_id, course_id):
         try:
-            submission = None
-            google = Google.GoogleCredential(id)
-            googleUserId = list(DB.DATABASE['user'].find({"_id": id}).limit(1))[0]["google_object"]["_id"]
+            google = Google.GoogleCredential(user_id)
+            googleUserId = \
+                list(DB.DATABASE['user'].find({"_id": user_id}, {"google_object._id": True, "_id": False}).limit(1))[0][
+                    'google_object']['_id']
             DATA = []
             for assignment in google.courses().courseWork().list(courseId=course_id).execute().get(
                     "courseWork"):
-                arr = []
+                submission = google.courses().courseWork().studentSubmissions().list(
+                    courseId=course_id, courseWorkId=assignment.get("id"), userId=googleUserId).execute().get(
+                    "studentSubmissions")[0]
+                dateTime = submission.get("updateTime").replace("-", "/").replace("T", " ").split(".")
+                dateTime = dateTime[0].split(" ")
+                date = dateTime[0].split("/")
+                time = dateTime[1].split(":")
+                submissionObject = {
+                    "user_id": submission.get("userId"),
+                    "state": submission.get("state"),
+                    "update_date": {
+                        "year": int(date[0]),
+                        "month": int(date[1]),
+                        "day": int(date[2])
+                    },
+                    "update_time": {
+                        "hours": int(time[0]),
+                        "minutes": int(time[1]),
+                        "seconds": int(time[2])
+                    },
+                    "score": submission.get("assignedGrade") if submission.get(
+                        "assignedGrade") is not None else 0
+                }
                 try:
-                    submission = google.courses().courseWork().studentSubmissions().list(
-                        courseId=course_id, courseWorkId=assignment.get("id"), userId=googleUserId).execute().get(
-                        "studentSubmissions")[0]
-                    submitList = list(
+                    studentSubmissionList = list(
                         DB.DATABASE["assignment"].find(
-                            {"_id": assignment.get("id"), "student_submission.user_id": submission.get("userId")}))
-                    if submission.get("userId") not in submitList:
-                        arr.append({
-                            "user_id": submission.get("userId"),
-                            "state": submission.get("state"),
-                            "score": submission.get("assignedGrade") if submission.get(
-                                "assignedGrade") is not None else 0
-                        })
+                            {"_id": assignment.get("id")}).limit(1))[0]["student_submission"]
+                    arr = []
+                    for submissionList in studentSubmissionList:
+                        arr.append(submissionList["user_id"])
+
+                    if submission.get("userId") not in arr:
+                        studentSubmissionList.append(submissionObject)
+                    if submission.get("userId") in arr:
+                        studentSubmissionList[studentSubmissionList.index(submission.get('userId'))] = submissionObject
                 except:
-                    pass
+                    studentSubmissionList = [submissionObject]
+
                 DATA.append(UpdateOne({'_id': assignment.get("id")}, {'$set': {
                     "_id": assignment.get("id"),
                     "course_id": assignment.get("courseId"),
@@ -40,13 +62,16 @@ class AssignmentServices:
                     "due_date": assignment.get("dueDate"),
                     "due_time": assignment.get("dueTime"),
                     "max_point": assignment.get("maxPoints"),
-                    "student_submission": arr if submission is not None else []
+                    "student_submission": studentSubmissionList if submission is not None else []
                 }}, upsert=True))
                 if len(DATA) == 10:
                     DB.DATABASE['assignment'].bulk_write(DATA, ordered=False)
                     DATA = []
             if len(DATA) > 0:
                 DB.DATABASE['assignment'].bulk_write(DATA, ordered=False)
-            return Response(content=orjson.dumps(list(DB.DATABASE['assignment'].find({"course_id": course_id}))))
+            assignment = list(DB.DATABASE['assignment'].find({"course_id": course_id}, {"student_submission": False}))[
+                0]
+
+            return Response(content=orjson.dumps(assignment))
         except:
             return "The assignment is not available for this ID or the classroom ID is not correct"

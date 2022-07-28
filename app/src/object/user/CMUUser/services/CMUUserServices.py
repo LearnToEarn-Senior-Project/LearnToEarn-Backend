@@ -9,27 +9,22 @@ class CMUUserServices:
 
     @staticmethod
     def getAccessToken(code):
-        URI = "https://oauth.cmu.ac.th/v1/GetToken.aspx"
-        request_body = {
+        response = post(url="https://oauth.cmu.ac.th/v1/GetToken.aspx", data=dict({
             "code": code,
             "redirect_uri": "http:/localhost:3000/redirect",
             "client_id": CMU.client_id,
             "client_secret": CMU.client_secret,
             "grant_type": "authorization_code"
-        }
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        response = post(URI, data=dict(request_body), headers=headers)
+        }), headers={'Content-Type': 'application/x-www-form-urlencoded'})
         return dict(response.json())
 
     @staticmethod
     def getCredentials(token):
-        URI = "https://misapi.cmu.ac.th/cmuitaccount/v1/api/cmuitaccount/basicinfo"
-        headers = {
+        response = get(url="https://misapi.cmu.ac.th/cmuitaccount/v1/api/cmuitaccount/basicinfo", headers={
             "Content-Type": "application/json",
             "Cache-Control": "no-cache",
             "Authorization": "Bearer " + token,
-        }
-        response = get(URI, headers=headers)
+        })
         return dict(response.json())
 
     @staticmethod
@@ -55,7 +50,7 @@ class CMUUserServices:
                         'email': cmuUser.email,
                         'google_object': cmuUser.google_object,
                         'role': ["student"],
-                        'current_token': 0
+                        'current_token': float(0)
                     })
                 return CMUUserServices.get(cmuUser.id)
             else:
@@ -66,13 +61,8 @@ class CMUUserServices:
     @staticmethod
     def get(user_id):
         try:
-            cmuUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))
-            try:
-                del cmuUser[0]["google_object"]
-                del cmuUser[0]["current_token"]
-                del cmuUser[0]["role"]
-            except:
-                pass
+            cmuUser = list(DB.DATABASE['user'].find({"_id": user_id}, {"google_object": False, "current_token": False,
+                                                                       "role": False}).limit(1))[0]
             return cmuUser
         except:
             return "User not found"
@@ -80,7 +70,7 @@ class CMUUserServices:
     @staticmethod
     def getRole(user_id):
         try:
-            return list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0].get("role")
+            return list(DB.DATABASE['user'].find({"_id": user_id}, {"role": True, "_id": False}).limit(1))[0]["role"]
         except:
             return "User not found"
 
@@ -88,7 +78,7 @@ class CMUUserServices:
     def swapRole(user_id):
         try:
             data = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]
-            array = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0].get("role")
+            array = list(DB.DATABASE['user'].find({"_id": user_id}, {"role": True, "_id": False}).limit(1))[0]["role"]
             tmp = array[0]
             array[0] = array[1]
             array[1] = tmp

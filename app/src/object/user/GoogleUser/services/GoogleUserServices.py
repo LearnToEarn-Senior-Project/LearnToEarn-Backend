@@ -7,14 +7,16 @@ from app.src.resources import Google
 class GoogleUserServices:
 
     @staticmethod
-    def bindAccount(user_id, authCode):
+    def bindAccount(user_id, auth_code):
         try:
-            auth_code = authCode
             scope = ["https://www.googleapis.com/auth/classroom.student-submissions.students.readonly",
-                "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly",
-                "https://www.googleapis.com/auth/classroom.courses.readonly",
-                "https://www.googleapis.com/auth/classroom.rosters.readonly"]
-            credentials = client.credentials_from_code(Google.client_id, Google.client_secret, scope, auth_code)
+                     "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly",
+                     "https://www.googleapis.com/auth/classroom.courses.readonly",
+                     "https://www.googleapis.com/auth/classroom.rosters.readonly"]
+            credentials = client.credentials_from_code(client_id=Google.client_id,
+                                                       client_secret=Google.client_secret,
+                                                       scope=scope,
+                                                       code=auth_code)
             user_token = {
                 "access_token": credentials.access_token,
                 "refresh_token": credentials.refresh_token
@@ -31,7 +33,8 @@ class GoogleUserServices:
                 'email': googleObject.email,
                 'image_url': googleObject.image_url
             }})
-            return list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
+            return list(DB.DATABASE['user'].find({"_id": user_id}, {"google_object": True, "_id": False}).limit(1))[0][
+                "google_object"]
         except:
             return "The user is not found or got some error"
 
@@ -46,9 +49,8 @@ class GoogleUserServices:
     @staticmethod
     def get(user_id):
         try:
-            googleUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]
-            if googleUser is not None:
-                del googleUser["user_token"]
+            googleUser = list(DB.DATABASE['user'].find({"_id": user_id}, {"user_token": False}).limit(1))[0][
+                "google_object"]
             return googleUser
         except:
             return "The user is not found or got some error"

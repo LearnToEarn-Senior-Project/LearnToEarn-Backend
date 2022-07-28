@@ -11,3 +11,6 @@ numpy
 srsly
 starlette
 orjson
+schedule
+pytz
+anyio
