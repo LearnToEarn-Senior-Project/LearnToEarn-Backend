@@ -1,5 +1,6 @@
 import uvicorn
 import multiprocessing as mp
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.src.object.token.controller import TokenController
@@ -36,4 +37,4 @@ app.include_router(GoogleClassroomController.router)
 app.include_router(AssignmentController.router)
 
 if __name__ == "__main__":
-    uvicorn.run("LearnToEarnApplication:app", reload=True, port=5000, workers=mp.cpu_count())
+    uvicorn.run("LearnToEarn_REST:app", reload=True, port=5000, workers=mp.cpu_count())
