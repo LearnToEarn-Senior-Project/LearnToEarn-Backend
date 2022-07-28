@@ -5,10 +5,10 @@ from app.src.object.tokenHistory.services.TokenHistoryServices import TokenHisto
 router = APIRouter()
 
 
-@router.post('/addTokenHistory')
-async def addTokenTansactionHistory(tokenHistory: Request):
+@router.post('/addTokenHistory/{student_id}')
+async def addTokenTansactionHistory(tokenHistory: Request, student_id: str):
     return TokenHistoryServices.add(dict(await tokenHistory.json())["date"],
                                     float(dict(await tokenHistory.json())["amount"]),
-                                    int(dict(await tokenHistory.json())['student_id']),
+                                    student_id,
                                     int(dict(await tokenHistory.json())['reward_id']),
                                    )

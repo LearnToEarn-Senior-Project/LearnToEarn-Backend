@@ -30,3 +30,8 @@ class TokenHistoryServices:
                 return "The input is required or the type of data is not correct"
         except:
             return
+
+    @staticmethod
+    def getAllTokenHistory(student_id):
+        result_data = DB.DATABASE["tokenHistory"].find({"student_id":student_id})
+        return result_data
