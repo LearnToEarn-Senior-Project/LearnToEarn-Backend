@@ -32,6 +32,23 @@ class TokenHistoryServices:
             return
 
     @staticmethod
-    def getAllTokenHistory(student_id):
-        result_data = DB.DATABASE["tokenHistory"].find({"student_id":student_id})
-        return result_data
+    def getAllTokenHistory(student_id, page):
+        try:
+            print("test")
+            perPage = 10
+            if page > 0:
+                tokenHistory_list = list(DB.DATABASE['tokenHistory'].find({"student_id": student_id}).skip(perPage * (page - 1)).limit(perPage))
+                tokenHistory = {
+                    "tokenHistory_list": tokenHistory_list
+                }
+                return tokenHistory
+            else:
+                tokenHistory = {
+                    "tokenHistory_list": []
+                }
+                return Response(content=orjson.dumps(tokenHistory))
+        except:
+            tokenHistory = {
+                "tokenHistory_list": []
+            }
+            return tokenHistory

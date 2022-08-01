@@ -12,3 +12,7 @@ async def addTokenTansactionHistory(tokenHistory: Request, student_id: str, rewa
                                     student_id,
                                     reward_id
                                    )
+
+@router.get('/getAllHistory/{student_id}/page={page}')
+async def getAllHistoryBySpecificID(student_id: str, page: int):
+    return TokenHistoryServices.getAllTokenHistory(student_id, page)
