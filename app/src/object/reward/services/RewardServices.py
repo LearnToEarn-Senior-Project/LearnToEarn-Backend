@@ -2,6 +2,7 @@ from bson import ObjectId
 from orjson import orjson
 from starlette.responses import Response
 
+from app.src.object.tokenHistory.services.TokenHistoryServices import TokenHistoryServices
 from app.src.server.database import DB
 from app.src.object.reward.entity.RewardDAO import RewardDAO
 
@@ -75,3 +76,16 @@ class RewardServices:
             return RewardServices.getByID(reward_id)
         else:
             return "The input is required or the type of data is not correct"
+
+    @staticmethod
+    def buy(reward_id, reward_price, user_id):
+        rewardAmount = list(
+            DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "_id": False}).limit(1))[0]["amount"]
+        tokenAmount = list(DB.DATABASE['token'].find({"_id": "1"}, {"amount": True, "_id": False}))[0]["amount"]
+        userTokenAmount = list(DB.DATABASE['user'].find({"_id": user_id}, {"current_token": True, "_id": False}))[0][
+            "current_token"]
+        DB.upsert(collection="reward", id=reward_id, data={"amount": rewardAmount - 1})
+        DB.upsert(collection="token", id="1", data={"amount": tokenAmount + reward_price})
+        DB.upsert(collection="user", id=user_id, data={"current_token": userTokenAmount - reward_price})
+        TokenHistoryServices.add((-1 * reward_price), user_id, reward_id)
+        return "Purchase Reward Successfully!!!"

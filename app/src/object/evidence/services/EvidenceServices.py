@@ -6,7 +6,7 @@ from PIL import ImageFont
 class EvidenceServices:
     @staticmethod
     def convertToImage():
-        img = Image.open('D:\\Course\\Fourth year\\First term\\Senior Project\\LearnToEarn\\LearnToEarn-Backend\\app\\src\\resources\\LTE_BillBackground.jpg')
+        img = Image.open("../app/src/resources/LTE_BillBackground.jpg")
         I1 = ImageDraw.Draw(img)
 
         # Add Text to an image

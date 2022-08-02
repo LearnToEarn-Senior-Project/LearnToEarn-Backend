@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.src.object.token.controller import TokenController
 from app.src.object.reward.controller import RewardController
+from app.src.object.tokenHistory.controller import TokenHistoryController
 from app.src.object.utility.controller import UtilityController
 from app.src.object.criteria.controller import CriteriaController
 from app.src.object.user.CMUUser.controller import CMUUserController
@@ -37,6 +38,7 @@ app.include_router(GoogleUserController.router)
 app.include_router(GoogleClassroomController.router)
 app.include_router(AssignmentController.router)
 app.include_router(EvidenceController.router)
+app.include_router(TokenHistoryController.router)
 
 if __name__ == "__main__":
     uvicorn.run("LearnToEarn_REST:app", reload=True, port=5000, workers=mp.cpu_count())

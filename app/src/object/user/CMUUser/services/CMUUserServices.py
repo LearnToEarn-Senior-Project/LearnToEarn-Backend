@@ -62,8 +62,8 @@ class CMUUserServices:
     def get(user_id):
         try:
             cmuUser = list(DB.DATABASE['user'].find({"_id": user_id}, {"google_object": False, "current_token": False,
-                                                                       "role": False}).limit(1))[0]
-            return cmuUser
+                                                                       "role": False}).limit(1))
+            return cmuUser[0]
         except:
             return "User not found"
 

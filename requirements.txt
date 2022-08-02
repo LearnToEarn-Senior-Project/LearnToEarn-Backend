@@ -14,3 +14,4 @@ orjson
 schedule
 pytz
 anyio
+pillow
