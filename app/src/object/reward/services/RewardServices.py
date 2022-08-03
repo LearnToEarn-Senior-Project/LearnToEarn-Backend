@@ -87,5 +87,4 @@ class RewardServices:
         DB.upsert(collection="reward", id=reward_id, data={"amount": rewardAmount - 1})
         DB.upsert(collection="token", id="1", data={"amount": tokenAmount + reward_price})
         DB.upsert(collection="user", id=user_id, data={"current_token": userTokenAmount - reward_price})
-        TokenHistoryServices.add((-1 * reward_price), user_id, reward_id)
-        return "Purchase Reward Successfully!!!"
+        return TokenHistoryServices.add((-1 * reward_price), user_id, reward_id)

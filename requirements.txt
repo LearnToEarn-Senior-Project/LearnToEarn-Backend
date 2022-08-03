@@ -15,3 +15,4 @@ schedule
 pytz
 anyio
 pillow
+scikit-learn

@@ -1,10 +1,10 @@
-from fastapi import APIRouter
-from app.src.server.database import DB
+from fastapi import APIRouter, Request
 from app.src.object.evidence.services.EvidenceServices import EvidenceServices
 
 router = APIRouter()
 
-@router.get('/convertBillToImage')
-async def convertToImage():
-    EvidenceServices.convertToImage()
 
+@router.post('/getBillImage/{user_id}')
+async def convertToImage(user_id: str, transaction: Request):
+    return EvidenceServices.convertToImage(user_id, dict(await transaction.json())["transaction_id"],
+                                           dict(await transaction.json())["reward_id"])
