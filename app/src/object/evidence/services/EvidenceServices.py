@@ -10,11 +10,14 @@ from sklearn.externals._pilutil import imsave
 class EvidenceServices:
     @staticmethod
     def convertToImage(user_id, transaction_id, reward_id):
-        img = Image.open("../app/src/resources/LTE_BillBackground.jpg")
         userName = list(
             DB.DATABASE["user"].find({"_id": user_id}, {"firstname": True, "lastname": True, "_id": False}).limit(1))[0]
         fullName = userName["firstname"] + " " + userName["lastname"]
         transactionInformation = list(DB.DATABASE["tokenHistory"].find({"_id": transaction_id}).limit(1))[0]
+        if transactionInformation["checked"] is True:
+            img = Image.open("../app/src/resources/LTE_BillBackgroundApproved.jpg")
+        else:
+            img = Image.open("../app/src/resources/LTE_BillBackground.jpg")
         reward = list(DB.DATABASE["reward"].find({"_id": reward_id}).limit(1))[0]
         I1 = ImageDraw.Draw(img)
         font = "../app/src/resources/Helvetica.ttf"

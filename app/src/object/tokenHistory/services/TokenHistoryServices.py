@@ -9,14 +9,19 @@ from app.src.server.database import DB
 class TokenHistoryServices:
 
     @staticmethod
-    def getAllPagination(user_id, page):
+    def getAllPagination(user_id, page, checked):
         try:
             perPage = 10
-            tokenHistoriesList = list(DB.DATABASE['tokenHistory'].find({"student_id": user_id}).skip(
-                perPage * (page - 1)).limit(perPage))
+            if checked is True:
+                json = {"student_id": user_id}
+                tokenHistoriesList = list(DB.DATABASE['tokenHistory'].find(json, sort=[("_id", -1)]).skip(
+                    perPage * (page - 1)).limit(perPage))
+            else:
+                json = {"student_id": user_id, "checked": False}
+                tokenHistoriesList = list(DB.DATABASE['tokenHistory'].find(json, sort=[("_id", -1)]))
             tokenHistories = {
                 "total_histories": len(
-                    list(DB.DATABASE['tokenHistory'].find({"student_id": user_id}))),
+                    list(DB.DATABASE['tokenHistory'].find(json))),
                 "token_history_list": tokenHistoriesList
             }
         except:
@@ -40,3 +45,28 @@ class TokenHistoryServices:
             'checked': False
         })
         return list(DB.DATABASE['tokenHistory'].find({"_id": id}).limit(1))[0]
+
+    @staticmethod
+    def approve(transaction_id):
+        DB.update(collection='tokenHistory', id=transaction_id, data={
+            'checked': True
+        })
+        return list(DB.DATABASE['tokenHistory'].find({"_id": transaction_id}).limit(1))[0]
+
+    @staticmethod
+    def getAllForApproval(page):
+        try:
+            perPage = 10
+            tokenHistoriesList = list(DB.DATABASE['tokenHistory'].find({"checked": False}, sort=[("_id", -1)]).skip(
+                perPage * (page - 1)).limit(perPage))
+            tokenHistories = {
+                "total_histories": len(
+                    list(DB.DATABASE['tokenHistory'].find())),
+                "token_history_list": tokenHistoriesList
+            }
+        except:
+            tokenHistories = {
+                "total_histories": 0,
+                "token_history_list": []
+            }
+        return Response(content=orjson.dumps(tokenHistories))
