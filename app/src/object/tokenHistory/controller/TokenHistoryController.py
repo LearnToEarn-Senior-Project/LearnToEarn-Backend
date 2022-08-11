@@ -18,3 +18,9 @@ async def getAllTokenHistoryForAdmin(page: int):
 @router.patch('/approveBill/{transaction_id}')
 async def approveBill(transaction_id: str):
     return TokenHistoryServices.approve(transaction_id)
+
+
+@router.post('/addHistory/{student_id}')
+async def addHistory(student_id: str, reward: Request):
+    return TokenHistoryServices.add(dict(await reward.json())["amount"], student_id,
+                                    dict(await reward.json())["_id"])

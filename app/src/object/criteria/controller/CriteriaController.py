@@ -5,11 +5,6 @@ from app.src.object.criteria.services.CriteriaServices import CriteriaServices
 router = APIRouter()
 
 
-@router.get('/criteria')
-async def getAllCriteria():
-    return CriteriaServices.getAll()
-
-
 @router.post('/setCriteria')
 async def setCriteria(criteria: Request):
     return CriteriaServices.add(dict(await criteria.json())['id'],
@@ -19,5 +14,5 @@ async def setCriteria(criteria: Request):
 
 
 @router.get('/getCriteria/{course_id}')
-async def setCriteria(course_id: str):
+async def getCriteriaInCourse(course_id: str):
     return CriteriaServices.get(course_id)

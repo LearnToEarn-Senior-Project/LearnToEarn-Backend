@@ -78,13 +78,33 @@ class RewardServices:
             return "The input is required or the type of data is not correct"
 
     @staticmethod
-    def buy(reward_id, reward_price, user_id):
-        rewardAmount = list(
-            DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "_id": False}).limit(1))[0]["amount"]
-        tokenAmount = list(DB.DATABASE['token'].find({"_id": "1"}, {"amount": True, "_id": False}))[0]["amount"]
-        userTokenAmount = list(DB.DATABASE['user'].find({"_id": user_id}, {"current_token": True, "_id": False}))[0][
-            "current_token"]
-        DB.upsert(collection="reward", id=reward_id, data={"amount": rewardAmount - 1})
-        DB.upsert(collection="token", id="1", data={"amount": tokenAmount + reward_price})
-        DB.upsert(collection="user", id=user_id, data={"current_token": userTokenAmount - reward_price})
-        return TokenHistoryServices.add((-1 * reward_price), user_id, reward_id)
+    def buy(reward_id, user_id):
+        try:
+            try:
+                list(
+                    DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "price": True, "_id": False}).limit(
+                        1))[0]
+            except:
+                return "Reward not found"
+            try:
+                list(DB.DATABASE['user'].find({"_id": user_id}, {"current_token": True, "_id": False}))[0][
+                    "current_token"]
+            except:
+                return "Student not found"
+            reward = list(
+                DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "price": True, "_id": False}).limit(1))[
+                0]
+            rewardAmount = reward["amount"]
+            rewardPrice = reward["price"]
+            tokenAmount = list(DB.DATABASE['token'].find({"_id": "1"}, {"amount": True, "_id": False}))[0]["amount"]
+            userTokenAmount = \
+                list(DB.DATABASE['user'].find({"_id": user_id}, {"current_token": True, "_id": False}))[0][
+                    "current_token"]
+            if userTokenAmount - rewardPrice < 0:
+                return "Cannot purchase this reward"
+            DB.upsert(collection="reward", id=reward_id, data={"amount": rewardAmount - 1})
+            DB.upsert(collection="token", id="1", data={"amount": tokenAmount + rewardPrice})
+            DB.upsert(collection="user", id=user_id, data={"current_token": userTokenAmount - rewardPrice})
+            return TokenHistoryServices.add((-1 * rewardPrice), user_id, reward_id)
+        except:
+            return "Cannot purchase this reward"
