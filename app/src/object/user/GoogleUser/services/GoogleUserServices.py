@@ -1,4 +1,4 @@
-from app.src.object.user.GoogleUser.entity.GoogleUserDAO import GoogleUserDAO
+from app.src.object.user.GoogleUser.entity.GoogleUser import GoogleUserDAO
 from app.src.server.database import DB
 from oauth2client import client
 from app.src.resources import Google

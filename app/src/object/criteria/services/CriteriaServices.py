@@ -1,4 +1,4 @@
-from app.src.object.criteria.entity.CriteriaDAO import Criteria
+from app.src.object.criteria.entity.Criteria import Criteria
 from app.src.server.database import DB
 
 

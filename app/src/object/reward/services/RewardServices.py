@@ -4,7 +4,7 @@ from starlette.responses import Response
 
 from app.src.object.tokenHistory.services.TokenHistoryServices import TokenHistoryServices
 from app.src.server.database import DB
-from app.src.object.reward.entity.RewardDAO import RewardDAO
+from app.src.object.reward.entity.Reward import RewardDAO
 
 
 class RewardServices:
@@ -78,7 +78,7 @@ class RewardServices:
             return "The input is required or the type of data is not correct"
 
     @staticmethod
-    def buy(reward_id, user_id):
+    def redeem(reward_id, user_id):
         try:
             try:
                 list(
@@ -101,10 +101,10 @@ class RewardServices:
                 list(DB.DATABASE['user'].find({"_id": user_id}, {"current_token": True, "_id": False}))[0][
                     "current_token"]
             if userTokenAmount - rewardPrice < 0:
-                return "Cannot purchase this reward"
+                return "Cannot redeem this reward"
             DB.upsert(collection="reward", id=reward_id, data={"amount": rewardAmount - 1})
             DB.upsert(collection="token", id="1", data={"amount": tokenAmount + rewardPrice})
             DB.upsert(collection="user", id=user_id, data={"current_token": userTokenAmount - rewardPrice})
             return TokenHistoryServices.add((-1 * rewardPrice), user_id, reward_id)
         except:
-            return "Cannot purchase this reward"
+            return "Cannot redeem this reward"

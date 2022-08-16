@@ -7,12 +7,12 @@ router = APIRouter()
 
 @router.post('/addToken')
 async def addToken(add: Request):
-    return TokenServices.add(dict(await add.json())['amount'])
+    return TokenServices.add(dict(await add.json())['amountOfCoin'])
 
 
 @router.get('/getAllToken')
-async def getTokenAmount():
-    return TokenServices.getAmount()
+async def getTokenAmountOfCoin():
+    return TokenServices.getAmountOfCoin()
 
 
 @router.get('/studentToken/{id}')

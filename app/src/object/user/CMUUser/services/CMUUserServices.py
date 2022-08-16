@@ -1,7 +1,7 @@
 from requests import post, get
 from bson import ObjectId
 from app.src.resources import CMU
-from app.src.object.user.CMUUser.entity.CMUUserDAO import CMUUserDAO
+from app.src.object.user.CMUUser.entity.CMUUser import CMUUserDAO
 from app.src.server.database import DB
 
 

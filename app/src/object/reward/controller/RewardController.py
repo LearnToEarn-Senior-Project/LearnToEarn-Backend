@@ -47,7 +47,7 @@ async def delete(reward_id: str):
     return RewardServices.delete(reward_id)
 
 
-@router.patch('/buyReward/{user_id}')
-async def buy(reward: Request, user_id: str):
-    return RewardServices.buy(dict(await reward.json())["_id"],
+@router.patch('/redeem/{user_id}')
+async def redeem(reward: Request, user_id: str):
+    return RewardServices.redeem(dict(await reward.json())["_id"],
                               user_id)

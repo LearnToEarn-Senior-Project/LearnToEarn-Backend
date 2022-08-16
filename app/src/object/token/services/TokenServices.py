@@ -1,20 +1,20 @@
 import datetime
 from app.src.server.database import DB
-from app.src.object.token.entity.TokenDAO import TokenDAO
+from app.src.object.token.entity.Token import TokenDAO
 
 
 class TokenServices:
     @staticmethod
-    def add(amount):
+    def add(amountOfCoin):
         try:
-            if amount > 0:
-                tokenAmount = TokenDAO(amount)
+            if amountOfCoin > 0:
+                tokenAmount = TokenDAO(amountOfCoin)
                 try:
                     current_token = list(DB.DATABASE['token'].find({"_id": "1"}).limit(1))[0]["amount"]
                 except:
                     current_token = 0
                 DB.upsert(collection='token', id="1", data={
-                    'amount': current_token + tokenAmount.amount
+                    'amount': current_token + tokenAmount.amountOfCoin
                 })
                 return list(DB.DATABASE['token'].find({"_id": "1"}).limit(1))[0]
             else:
@@ -31,7 +31,7 @@ class TokenServices:
         return studentToken
 
     @staticmethod
-    def getAmount():
+    def getAmountOfCoin():
         try:
             return DB.DATABASE['token'].find({"_id": "1"}).limit(1)[0]["amount"]
         except:

@@ -12,7 +12,6 @@ from app.src.object.user.CMUUser.controller import CMUUserController
 from app.src.object.assignment.controller import AssignmentController
 from app.src.object.user.GoogleUser.controller import GoogleUserController
 from app.src.object.classroom.controller import GoogleClassroomController
-from app.src.object.evidence.controller import EvidenceController
 
 app = FastAPI()
 origins = [
@@ -37,7 +36,6 @@ app.include_router(CMUUserController.router)
 app.include_router(GoogleUserController.router)
 app.include_router(GoogleClassroomController.router)
 app.include_router(AssignmentController.router)
-app.include_router(EvidenceController.router)
 app.include_router(TokenHistoryController.router)
 
 if __name__ == "__main__":
