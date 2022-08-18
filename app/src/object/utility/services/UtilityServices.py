@@ -1,8 +1,7 @@
 import io
 import base64
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+import qrcode
+from PIL import Image, ImageOps, ImageDraw, ImageFont
 from bson import ObjectId
 from app.src.server.database import DB
 from sklearn.externals._pilutil import imsave
@@ -62,6 +61,8 @@ class UtilityServices:
                 img = Image.open("../app/src/resources/LTE_BillBackground.jpg")
             reward = list(DB.DATABASE["reward"].find({"_id": reward_id}).limit(1))[0]
             I1 = ImageDraw.Draw(img)
+            buf = io.BytesIO()
+
             font = "../app/src/resources/Helvetica.ttf"
             # Add Text to an image
             font_Header = ImageFont.truetype(font, 20)
@@ -69,6 +70,13 @@ class UtilityServices:
             font_detail = ImageFont.truetype(font, 20)
             font_thanks1 = ImageFont.truetype(font, 22)
             font_thanks2 = ImageFont.truetype(font, 15)
+            qrCode = qrcode.QRCode(
+                version=1,
+                box_size=4,
+                border=1)
+            qrCode.add_data(tokenHistory_id)
+            qrCode.make(fit=True)
+            qrImg = qrCode.make_image()
 
             # Add Text to an image
             I1.text((490, 20), "Token History ID: " + tokenHistory_id, font=font_thanks2, fill=(0, 0, 0))
@@ -84,10 +92,15 @@ class UtilityServices:
             I1.text((625, 339), str(reward["price"]), font=font_detail, fill=(0, 0, 0))
             I1.text((442, 402), "Total price", font=font_Header, fill=(0, 0, 0))
             I1.text((625, 402), str(reward["price"]), font=font_detail, fill=(0, 0, 0))
-            I1.text((235, 483), "Thanks to the intended learning", font=font_thanks1, fill=(0, 0, 0))
-            I1.text((287, 514), "This is a reward for your effort", font=font_thanks2, fill=(0, 0, 0))
-            buf = io.BytesIO()
+            I1.text((250, 475), "Thanks to the intended learning", font=font_thanks1, fill=(0, 0, 0))
+            I1.text((295, 505), "This is a reward for your effort", font=font_thanks2, fill=(0, 0, 0))
+            if tokenHistoryInformation["checked"] is False:
+                I1.text((40, 500), "For admin, scan here", font=font_thanks2, fill=(0, 0, 0))
+                I1.text((30, 520), "to approve this statement", font=font_thanks2, fill=(0, 0, 0))
+                I1.bitmap((55, 390), ImageOps.invert(qrImg), fill=(0, 0, 0))
+            # I1.bitmap((55, 490), code128.image(tokenHistory_id).resize((250, 50)), fill=(0, 0, 0))
             imsave(buf, img, format='PNG')
+
             buf.seek(0)
             return str(base64.b64encode(buf.getvalue()))[2::][:-1]
         except:

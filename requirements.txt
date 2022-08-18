@@ -16,3 +16,4 @@ pytz
 anyio
 pillow
 scikit-learn
+qrcode

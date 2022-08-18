@@ -61,6 +61,8 @@ class TokenHistoryServices:
     @staticmethod
     def approve(tokenHistory_id):
         try:
+            if list(DB.DATABASE['tokenHistory'].find({"_id": tokenHistory_id}).limit(1))[0]["checked"] is True:
+                return "Cannot approve this token history (This Token History is already approved!!)"
             DB.update(collection='tokenHistory', id=tokenHistory_id, data={
                 'checked': True
             })
