@@ -14,7 +14,7 @@ class CriteriaServices:
             if criteria.first is None or second["value"] is None or criteria.third is None:
                 return "The criteria cannot be null"
             if second["value"] is True and (
-                    second["count"] <= 0 or float(second["count"]) or str(second["count"])):
+                    second["count"] <= 0 or isinstance(second["count"], float) or isinstance(second["count"], str)):
                 return "The counting must more than 0 and must be integer type"
             if second["value"] is False and second["count"] is not None:
                 return "The counting must be null"
