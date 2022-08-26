@@ -9,9 +9,8 @@ from pymongo import UpdateOne
 class GoogleClassroomServices:
 
     @staticmethod
-    def getAllPagination(user_id, page):
+    def getAllPagination(user_id, page, perPage):
         try:
-            perPage = 4
             google = Google.GoogleCredential(user_id)
             googleUserId = \
                 list(DB.DATABASE['user'].find({"_id": user_id}, {"google_object._id": True, "_id": False}).limit(1))[0][

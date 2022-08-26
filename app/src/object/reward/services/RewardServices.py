@@ -9,9 +9,8 @@ from app.src.object.reward.entity.Reward import RewardDAO
 
 class RewardServices:
     @staticmethod
-    def getAllPagination(page):
+    def getAllPagination(page, perPage):
         try:
-            perPage = 10
             if page > 0:
                 totalRewards = len(list(DB.DATABASE['reward'].find()))
                 rewardList = list(DB.DATABASE['reward'].find().skip(perPage * (page - 1)).limit(perPage))

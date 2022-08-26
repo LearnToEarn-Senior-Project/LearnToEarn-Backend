@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/rewards/page={page}")
 async def getAllPagination(page: int):
-    return RewardServices.getAllPagination(page)
+    return RewardServices.getAllPagination(page, 10)
 
 
 @router.get('/reward/{reward_id}')
@@ -50,4 +50,4 @@ async def delete(reward_id: str):
 @router.patch('/redeem/{user_id}')
 async def redeem(reward: Request, user_id: str):
     return RewardServices.redeem(dict(await reward.json())["_id"],
-                              user_id)
+                                 user_id)
