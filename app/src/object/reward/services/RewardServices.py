@@ -38,7 +38,8 @@ class RewardServices:
 
     @staticmethod
     def add(name, detail, amount, price, image_url):
-        if (name and detail and amount and price is not None) and type(amount) is int and (amount >= 0 and price >= 0):
+        if (name and detail and amount and price is not None) and isinstance(amount, int) and (
+                int(amount) >= 0 and float(price) >= 0):
             reward = RewardDAO(name, detail, amount, price, image_url)
             id = ObjectId().__str__()
             DB.insert(collection='reward', data={
@@ -63,8 +64,8 @@ class RewardServices:
 
     @staticmethod
     def update(reward_id, name, detail, amount, price, image_url):
-        if reward_id and name and detail and amount and price is not None and type(
-                amount) is int and (amount >= 0 and price >= 0):
+        if (reward_id and name and detail and amount and price is not None) and isinstance(amount, int) and (
+                int(amount) >= 0 and float(price) >= 0):
             reward = RewardDAO(name, detail, amount, price, image_url)
             DB.update(collection='reward', id=reward_id, data={
                 'name': reward.name,
@@ -72,6 +73,7 @@ class RewardServices:
                 'amount': reward.amount,
                 'price': reward.price,
                 'image': reward.image_url})
+
             return RewardServices.getByID(reward_id)
         else:
             return "The input is required or the type of data is not correct"
