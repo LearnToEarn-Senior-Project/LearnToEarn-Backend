@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get('/getGoogleClassrooms/{id}/page={page}')
 async def getAllGoogleClassrooms(id: str, page: int):
-    return GoogleClassroomServices.getAllPagination(id, page, 4)
+    return GoogleClassroomServices.getAllPagination(id, page)
 
 
 @router.get('/getClassroomWithAssignment/{id}/{course_id}')

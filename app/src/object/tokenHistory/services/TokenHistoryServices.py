@@ -9,7 +9,8 @@ from app.src.server.database import DB
 class TokenHistoryServices:
 
     @staticmethod
-    def getAllPagination(user_id, page, checked, perPage):
+    def getAllPagination(user_id, page, checked):
+        perPage = 10
         try:
             if checked is True:
                 json = {"student_id": user_id}
@@ -71,7 +72,8 @@ class TokenHistoryServices:
             return "Cannot approve this token history (Token History ID not found)"
 
     @staticmethod
-    def getAllForAdminApproval(page, perPage):
+    def getAllForAdminApproval(page):
+        perPage = 10
         try:
             tokenHistoriesList = list(DB.DATABASE['tokenHistory'].find({"checked": False}, sort=[("_id", -1)]).skip(
                 perPage * (page - 1)).limit(perPage))

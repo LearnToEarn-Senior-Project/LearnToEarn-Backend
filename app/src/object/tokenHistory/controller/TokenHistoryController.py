@@ -7,12 +7,12 @@ router = APIRouter()
 
 @router.get('/getAllTokenHistory/{id}/page={page}/bool={checked}')
 async def getAllTokenHistoryForStudent(id: str, page: int, checked: bool):
-    return TokenHistoryServices.getAllPagination(id, page, checked, 10)
+    return TokenHistoryServices.getAllPagination(id, page, checked)
 
 
 @router.get('/getAllTokenHistory/page={page}')
 async def getAllTokenHistoryForAdmin(page: int):
-    return TokenHistoryServices.getAllForAdminApproval(page, 10)
+    return TokenHistoryServices.getAllForAdminApproval(page)
 
 
 @router.patch('/approve/{tokenHistory_id}')

@@ -7,7 +7,7 @@ router = APIRouter()
 
 @router.get("/rewards/page={page}")
 async def getAllPagination(page: int):
-    return RewardServices.getAllPagination(page, 10)
+    return RewardServices.getAllPagination(page)
 
 
 @router.get('/reward/{reward_id}')
