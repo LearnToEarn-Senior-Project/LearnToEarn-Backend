@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 
 class DB(object):
-    URI = "mongodb://127.0.0.1:27017"
+    URI = "mongodb+srv://LearnToEarn:LearnToEarn2022@lte-backend.8tudrjt.mongodb.net"
 
     client = MongoClient(URI)
     DATABASE = client['learn-to-earn']
