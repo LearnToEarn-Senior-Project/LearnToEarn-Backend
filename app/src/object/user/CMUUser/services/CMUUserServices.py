@@ -11,7 +11,7 @@ class CMUUserServices:
     def getAccessToken(code):
         response = post(url="https://oauth.cmu.ac.th/v1/GetToken.aspx", data=dict({
             "code": code,
-            "redirect_uri": "http:/localhost:3000/redirect",
+            "redirect_uri": "https://learntoearn-se-cmu2022.web.app/redirect",
             "client_id": CMU.client_id,
             "client_secret": CMU.client_secret,
             "grant_type": "authorization_code"
