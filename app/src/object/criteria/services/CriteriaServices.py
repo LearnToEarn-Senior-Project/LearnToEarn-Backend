@@ -11,7 +11,7 @@ class CriteriaServices:
             except:
                 return "classroom not found"
             criteria = Criteria(course_id, first, second, third)
-            if criteria.first is None or second["value"] is None or criteria.third is None:
+            if criteria.first["value"] is None or second["value"] is None or criteria.third["value"] is None:
                 return "The criteria cannot be null"
             if second["value"] is True and (
                     second["count"] <= 0 or isinstance(second["count"], float) or isinstance(second["count"], str)):
@@ -23,7 +23,6 @@ class CriteriaServices:
                                                                  'second': criteria.second,
                                                                  'third': criteria.third,
                                                                  })
-
             return list(DB.DATABASE['criteria'].find({"_id": criteria.course_id}))[0]
         except:
             return "The data is not complete"
@@ -38,11 +37,18 @@ class CriteriaServices:
             except:
                 return "classroom not found"
             DB.upsert(collection='criteria', id=course_id, data={'_id': course_id,
-                                                                 'first': False,
+                                                                 'first': {
+                                                                     'value': False,
+                                                                     'statCount': 0
+                                                                 },
                                                                  'second': {
                                                                      'value': False,
-                                                                     'count': None
+                                                                     'count': None,
+                                                                     'statCount': 0
                                                                  },
-                                                                 'third': False,
+                                                                 'third': {
+                                                                     'value': False,
+                                                                     'statCount': 0
+                                                                 }
                                                                  })
             return list(DB.DATABASE['criteria'].find({"_id": course_id}).limit(1))[0]

@@ -16,7 +16,7 @@ def GoogleCredential(user_id):
             "refresh_token": googleUser["refresh_token"]
         })
 
-        if creds and creds.expired and creds.refresh_token:
+        if creds or creds.expired or creds.refresh_token:
             creds.refresh(Request())
             DB.update(collection='user', id=user_id, data={
                 "google_object.user_token.access_token": creds.__getstate__().get("token")
