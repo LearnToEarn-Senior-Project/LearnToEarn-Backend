@@ -1,2 +1,2 @@
-client_id = "Q9Vwtr4e0SY84qqFwkZR5pGfxvKBj47MNvkpvQPN"
-client_secret = "Rnfsd8uSRsYDdaHBCQ98SD65UnxKdamTGnaTgqcy"
+client_id = "DfQ7tTs1Qua9Jktfz5UupXN3uvZHsD1HUtYq617r"
+client_secret = "RsZ34h0zGHg446tSDWQ83UJkCDsrxdjJ7CQ78U9m"
