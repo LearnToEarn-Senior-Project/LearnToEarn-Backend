@@ -1,5 +1,7 @@
 import io
 import base64
+import os
+
 import qrcode
 from PIL import Image, ImageOps, ImageDraw, ImageFont
 from bson import ObjectId
@@ -13,7 +15,8 @@ class UtilityServices:
     def getImgPath(image_name, content):
         try:
             byte = io.BytesIO(content)
-            cred = credentials.Certificate("../app/src/resources/LearnToEarn-Firebase-Credential.json")
+            cred = credentials.Certificate(
+                os.path.join(os.path.dirname(__file__), "LearnToEarn-Firebase-Credential.json"))
             try:
                 initialize_app(cred, {'storageBucket': 'learntoearn-350914.appspot.com'})
             except:
