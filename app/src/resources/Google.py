@@ -16,12 +16,28 @@ def GoogleCredential(user_id):
             "refresh_token": googleUser["refresh_token"]
         })
 
-        if creds or creds.expired or creds.refresh_token:
-            creds.refresh(Request())
-            DB.update(collection='user', id=user_id, data={
-                "google_object.user_token.access_token": creds.__getstate__().get("token")
-            })
+        creds.refresh(Request())
+        DB.update(collection='user', id=user_id, data={
+            "google_object.user_token.access_token": creds.__getstate__().get("token")
+        })
 
         return build('classroom', 'v1', credentials=creds)
+    except:
+        return None
+
+
+def RefreshToken(user_id):
+    try:
+        googleUser = list(DB.DATABASE['user'].find({"_id": user_id}).limit(1))[0]["google_object"]["user_token"]
+        creds = Credentials.from_authorized_user_info({
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "refresh_token": googleUser["refresh_token"]
+        })
+
+        creds.refresh(Request())
+        DB.update(collection='user', id=user_id, data={
+            "google_object.user_token.access_token": creds.__getstate__().get("token")
+        })
     except:
         return None

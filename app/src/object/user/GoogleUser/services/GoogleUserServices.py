@@ -49,7 +49,7 @@ class GoogleUserServices:
     @staticmethod
     def get(user_id):
         try:
-            Google.GoogleCredential(user_id)
+            Google.RefreshToken(user_id)
             googleUser = list(DB.DATABASE['user'].find({"_id": user_id}, {"user_token": False}).limit(1))[0][
                 "google_object"]
             return googleUser
