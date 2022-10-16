@@ -24,6 +24,10 @@ class AssignmentServices:
                 dateTime = dateTime[0].split(" ")
                 date = dateTime[0].split("/")
                 time = dateTime[1].split(":")
+                if len(time) == 1:
+                    time[1] = 0
+                elif len(time) == 2:
+                    time[2] = 0
                 submissionObject = {
                     "user_id": submission.get("userId"),
                     "state": submission.get("state"),
@@ -38,7 +42,7 @@ class AssignmentServices:
                         "seconds": int(time[2])
                     },
                     "score": submission.get("assignedGrade") if submission.get(
-                        "assignedGrade") is not None else 0
+                        "assignedGrade") is not None else 0,
                 }
                 try:
                     studentSubmissionList = list(

@@ -10,13 +10,13 @@ from app.src.object.token.services.TokenServices import TokenServices
 sendToken = FastAPI()
 
 
-@sendToken.on_event("startup")
-@repeat_every(wait_first=True, seconds=1)
+# @sendToken.on_event("startup")
+# @repeat_every(wait_first=True, seconds=1)
 async def sendStudentToken():
     # print(counts.count1())
     TokenServices.sendToken()
-    if datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%H:%M:%S").__str__() == "00:00:00":
-        return await TokenServices.sendToken()
+    # if datetime.now(pytz.timezone('Asia/Bangkok')).strftime("%H:%M:%S").__str__() == "00:00:00":
+    #     return await TokenServices.sendToken()
 
 
 class counts:

@@ -34,9 +34,10 @@ class TokenHistoryServices:
     @staticmethod
     def add(amountOfCoin, student_id, reward_id):
         try:
-            list(
-                DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "price": True, "_id": False}).limit(
-                    1))[0]
+            if reward_id != "sendTokenToStudent":
+                var = list(
+                    DB.DATABASE["reward"].find({"_id": reward_id}, {"amount": True, "price": True, "_id": False}).limit(
+                        1))[0]
         except:
             return "Reward not found"
         try:
@@ -44,7 +45,8 @@ class TokenHistoryServices:
                 "current_token"]
         except:
             return "Student not found"
-        tokenHistory = TokenHistory(datetime.now(), amountOfCoin, student_id, reward_id if reward_id else None)
+        tokenHistory = TokenHistory(datetime.now(), amountOfCoin, student_id,
+                                    None if reward_id == "sendTokenToStudent" else reward_id)
         dt_string = tokenHistory.date.strftime("%d/%m/%Y %H:%M:%S")
         if amountOfCoin is str(amountOfCoin):
             return "Amount must be number only"

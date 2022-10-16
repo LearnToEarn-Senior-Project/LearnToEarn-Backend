@@ -18,3 +18,8 @@ async def getTokenAmountOfCoin():
 @router.get('/studentToken/{id}')
 async def getStudentToken(id: str):
     return TokenServices.getStudentToken(id)
+
+
+@router.patch('/sendToken/{course_id}')
+async def sendToken(course_id: str):
+    return TokenServices.sendToken(course_id)
