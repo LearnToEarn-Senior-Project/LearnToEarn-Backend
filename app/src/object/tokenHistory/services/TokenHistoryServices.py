@@ -2,7 +2,7 @@ from bson import ObjectId
 from orjson import orjson
 from datetime import datetime
 from starlette.responses import Response
-from app.src.object.tokenHistory.entity.TokenHistory import TokenHistoryDAO
+from app.src.object.tokenHistory.entity.TokenHistory import TokenHistory
 from app.src.server.database import DB
 
 
@@ -44,7 +44,7 @@ class TokenHistoryServices:
                 "current_token"]
         except:
             return "Student not found"
-        tokenHistory = TokenHistoryDAO(datetime.now(), amountOfCoin, student_id, reward_id if reward_id else None)
+        tokenHistory = TokenHistory(datetime.now(), amountOfCoin, student_id, reward_id if reward_id else None)
         dt_string = tokenHistory.date.strftime("%d/%m/%Y %H:%M:%S")
         if amountOfCoin is str(amountOfCoin):
             return "Amount must be number only"

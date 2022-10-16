@@ -74,4 +74,4 @@ class AssignmentServices:
 
             return Response(content=orjson.dumps(assignment))
         except:
-            return "The assignment is not available for this ID or the classroom ID is not correct"
+            return "The assignment is not found for this ID or the classroom ID is not correct"

@@ -1,4 +1,4 @@
-class TokenHistoryDAO(object):
+class TokenHistory(object):
     __slots__ = "date", "amountOfCoin", "student_id", "reward_id"
 
     def __init__(self, date, amountOfCoin, student_id, reward_id):

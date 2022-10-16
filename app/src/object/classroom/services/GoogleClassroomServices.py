@@ -77,7 +77,7 @@ class GoogleClassroomServices:
                 }
             }, ]))[0]
         except:
-            return "The classroom or student is not available"
+            return "The classroom or student is not found"
 
     @staticmethod
     def getById(course_id):

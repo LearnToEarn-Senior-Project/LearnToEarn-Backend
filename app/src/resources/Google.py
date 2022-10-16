@@ -15,12 +15,10 @@ def GoogleCredential(user_id):
             "client_secret": client_secret,
             "refresh_token": googleUser["refresh_token"]
         })
-
         creds.refresh(Request())
         DB.update(collection='user', id=user_id, data={
             "google_object.user_token.access_token": creds.__getstate__().get("token")
         })
-
         return build('classroom', 'v1', credentials=creds)
     except:
         return None

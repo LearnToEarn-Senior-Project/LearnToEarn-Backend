@@ -61,7 +61,7 @@ class RewardServices:
         if DB.delete(collection='reward', data=reward_id) is not None:
             return "Delete reward successfully!!"
         else:
-            return "The reward ID is not available"
+            return "The reward ID is not found"
 
     @staticmethod
     def update(reward_id, name, detail, amount, price, image_url):

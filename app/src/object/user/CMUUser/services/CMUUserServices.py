@@ -1,7 +1,7 @@
 from requests import post, get
 from bson import ObjectId
 from app.src.resources import CMU
-from app.src.object.user.CMUUser.entity.CMUUser import CMUUserDAO
+from app.src.object.user.CMUUser.entity.CMUUser import CMUUser
 from app.src.server.database import DB
 
 
@@ -30,7 +30,7 @@ class CMUUserServices:
     @staticmethod
     def add(user_id, firstname, lastname, email, role):
         try:
-            cmuUser = CMUUserDAO(user_id, firstname, lastname, email, None, role)
+            cmuUser = CMUUser(user_id, firstname, lastname, email, None, role)
             if user_id and firstname and lastname and email and role is not None:
                 if role == "teacher":
                     id = ObjectId().__str__()

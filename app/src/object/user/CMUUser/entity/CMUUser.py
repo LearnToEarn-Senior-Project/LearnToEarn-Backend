@@ -1,4 +1,4 @@
-class CMUUserDAO(object):
+class CMUUser(object):
     __slots__ = "id", "firstname", "lastname", "email", "google_object", "role"
 
     def __init__(self, id, firstname, lastname, email, google_object, role):
