@@ -42,12 +42,14 @@ class TokenServices:
     def sendToken(course_id):
         studentList = list(DB.DATABASE['user'].find({"role": "student"}))
         tokenAmount = TokenServices.getAmountOfCoin()
-        criteria = list(DB.DATABASE['criteria'].find({"_id": course_id}))[0]
+        if not list(DB.DATABASE['criteria'].find({"_id": course_id}))[0]:
+            return "Classroom not found"
         if studentList.__len__() <= 0:
             return "Students not found"
         elif tokenAmount <= 0:
             return "Token amount is 0 or less than 0"
         else:
+            criteria = list(DB.DATABASE['criteria'].find({"_id": course_id}))[0]
             giveToken = (10 * tokenAmount) / (studentList.__len__() * (10 ** (len(str(round(tokenAmount, 3))) - 1)))
             allAssignmentList = list(DB.DATABASE['assignment'].find({"course_id": course_id},
                                                                     {'student_submission': True, 'name': True,
