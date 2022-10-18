@@ -51,11 +51,6 @@ class AssignmentServices:
                     arr = []
                     for submissionList in studentSubmissionList:
                         arr.append(submissionList["user_id"])
-
-                    if submission.get("userId") not in arr:
-                        studentSubmissionList.append(submissionObject)
-                    if submission.get("userId") in arr:
-                        studentSubmissionList[studentSubmissionList.index(submission.get('userId'))] = submissionObject
                 except:
                     studentSubmissionList = [submissionObject]
 

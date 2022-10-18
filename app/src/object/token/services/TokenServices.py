@@ -81,84 +81,7 @@ class TokenServices:
                                 print(studentSubmission["user_id"])
                                 if (assignmentDateTime - submissionDateTime[criteriaOneIndex]).days >= 0 and \
                                         studentSubmission["state"] == "TURNED_IN":
-                                    if "student" in list(DB.DATABASE['user'].find(
-                                            {"google_object._id":
-                                                 studentSubmission["user_id"]}))[0]["role"]:
-                                        DB.DATABASE['user'].update_one(
-                                            {"google_object._id": studentSubmission["user_id"]},
-                                            {"$set": {
-                                                "current_token":
-                                                    list(DB.DATABASE['user'].find(
-                                                        {"google_object._id":
-                                                             studentSubmission["user_id"]}))[0][
-                                                        "current_token"] + giveToken
-                                            }})
-                                        DB.DATABASE['token'].update_one(
-                                            {"_id": "1"},
-                                            {"$set": {
-                                                "amount":
-                                                    list(DB.DATABASE['token'].find(
-                                                        {"_id": "1"}))[0]["amount"] - giveToken
-                                            }})
-                                        TokenHistoryServices.add(giveToken, list(DB.DATABASE['user'].find(
-                                            {"google_object._id": studentSubmission["user_id"]}))[0]["_id"],
-                                                                 "sendTokenToStudent")
-                        # ====================== Criteria 2 ===================
-                        if (criteria["second"]["value"] is True) and (
-                                "attendance" not in assignmentList["name"].lower()):
-                            submissionDateTime = []
-                            for criteriaTwoIndex, studentSubmission in enumerate(submissionList):
-                                submissionDateTime.append(
-                                    datetime.datetime(studentSubmission["update_date"]["year"],
-                                                      studentSubmission["update_date"]["month"],
-                                                      studentSubmission["update_date"]["day"],
-                                                      studentSubmission["update_time"]["hours"],
-                                                      studentSubmission["update_time"]["minutes"],
-                                                      studentSubmission["update_time"]["seconds"]))
-                                keepTempContinuously = []
-                                for count in range(criteria["second"]["count"]):
-                                    if (assignmentDateTime - submissionDateTime[criteriaTwoIndex]).days >= 0 and \
-                                            studentSubmission["state"] == "TURNED_IN":
-                                        if studentSubmission not in keepTempContinuously:
-                                            keepTempContinuously.append(studentSubmission)
-                                if len(keepTempContinuously) >= criteria["second"]["count"]:
-                                    if "student" in list(DB.DATABASE['user'].find(
-                                            {"google_object._id":
-                                                 studentSubmission["user_id"]}))[0]["role"]:
-                                        DB.DATABASE['user'].update_one(
-                                            {"google_object._id": studentSubmission["user_id"]},
-                                            {"$set": {
-                                                "current_token":
-                                                    list(DB.DATABASE['user'].find(
-                                                        {"google_object._id":
-                                                             studentSubmission["user_id"]}))[0][
-                                                        "current_token"] + giveToken
-                                            }})
-                                        DB.DATABASE['token'].update_one(
-                                            {"_id": "1"},
-                                            {"$set": {
-                                                "amount":
-                                                    list(DB.DATABASE['token'].find(
-                                                        {"_id": "1"}))[0]["amount"] - giveToken
-                                            }})
-                                        TokenHistoryServices.add(giveToken, list(DB.DATABASE['user'].find(
-                                            {"google_object._id": studentSubmission["user_id"]}))[0]["_id"],
-                                                                 "sendTokenToStudent")
-                        # ====================== Criteria 3 ===================
-                        if criteria["third"]["value"] is True:
-                            submissionDateTime = []
-                            for criteriaThreeIndex, studentSubmission in enumerate(submissionList):
-                                submissionDateTime.append(
-                                    datetime.datetime(studentSubmission["update_date"]["year"],
-                                                      studentSubmission["update_date"]["month"],
-                                                      studentSubmission["update_date"]["day"],
-                                                      studentSubmission["update_time"]["hours"],
-                                                      studentSubmission["update_time"]["minutes"],
-                                                      studentSubmission["update_time"]["seconds"]))
-                                for studentSubmission in submissionList:
-                                    if ("attendance" in assignmentList["name"].lower()) and (
-                                            studentSubmission["state"] == "TURNED_IN") and (
-                                            assignmentDateTime - submissionDateTime[criteriaThreeIndex]).days >= 0:
+                                    try:
                                         if "student" in list(DB.DATABASE['user'].find(
                                                 {"google_object._id":
                                                      studentSubmission["user_id"]}))[0]["role"]:
@@ -181,4 +104,90 @@ class TokenServices:
                                             TokenHistoryServices.add(giveToken, list(DB.DATABASE['user'].find(
                                                 {"google_object._id": studentSubmission["user_id"]}))[0]["_id"],
                                                                      "sendTokenToStudent")
+                                    except:
+                                        pass
+                        # ====================== Criteria 2 ===================
+                        if (criteria["second"]["value"] is True) and (
+                                "attendance" not in assignmentList["name"].lower()):
+                            submissionDateTime = []
+                            for criteriaTwoIndex, studentSubmission in enumerate(submissionList):
+                                submissionDateTime.append(
+                                    datetime.datetime(studentSubmission["update_date"]["year"],
+                                                      studentSubmission["update_date"]["month"],
+                                                      studentSubmission["update_date"]["day"],
+                                                      studentSubmission["update_time"]["hours"],
+                                                      studentSubmission["update_time"]["minutes"],
+                                                      studentSubmission["update_time"]["seconds"]))
+                                keepTempContinuously = []
+                                for count in range(criteria["second"]["count"]):
+                                    if (assignmentDateTime - submissionDateTime[criteriaTwoIndex]).days >= 0 and \
+                                            studentSubmission["state"] == "TURNED_IN":
+                                        if studentSubmission not in keepTempContinuously:
+                                            keepTempContinuously.append(studentSubmission)
+                                if len(keepTempContinuously) >= criteria["second"]["count"]:
+                                    try:
+                                        if "student" in list(DB.DATABASE['user'].find(
+                                                {"google_object._id":
+                                                     studentSubmission["user_id"]}))[0]["role"]:
+                                            DB.DATABASE['user'].update_one(
+                                                {"google_object._id": studentSubmission["user_id"]},
+                                                {"$set": {
+                                                    "current_token":
+                                                        list(DB.DATABASE['user'].find(
+                                                            {"google_object._id":
+                                                                 studentSubmission["user_id"]}))[0][
+                                                            "current_token"] + giveToken
+                                                }})
+                                            DB.DATABASE['token'].update_one(
+                                                {"_id": "1"},
+                                                {"$set": {
+                                                    "amount":
+                                                        list(DB.DATABASE['token'].find(
+                                                            {"_id": "1"}))[0]["amount"] - giveToken
+                                                }})
+                                            TokenHistoryServices.add(giveToken, list(DB.DATABASE['user'].find(
+                                                {"google_object._id": studentSubmission["user_id"]}))[0]["_id"],
+                                                                     "sendTokenToStudent")
+                                    except:
+                                        pass
+                        # ====================== Criteria 3 ===================
+                        if criteria["third"]["value"] is True:
+                            submissionDateTime = []
+                            for criteriaThreeIndex, studentSubmission in enumerate(submissionList):
+                                submissionDateTime.append(
+                                    datetime.datetime(studentSubmission["update_date"]["year"],
+                                                      studentSubmission["update_date"]["month"],
+                                                      studentSubmission["update_date"]["day"],
+                                                      studentSubmission["update_time"]["hours"],
+                                                      studentSubmission["update_time"]["minutes"],
+                                                      studentSubmission["update_time"]["seconds"]))
+                                for studentSubmission in submissionList:
+                                    try:
+                                        if ("attendance" in assignmentList["name"].lower()) and (
+                                                studentSubmission["state"] == "TURNED_IN") and (
+                                                assignmentDateTime - submissionDateTime[criteriaThreeIndex]).days >= 0:
+                                            if "student" in list(DB.DATABASE['user'].find(
+                                                    {"google_object._id":
+                                                         studentSubmission["user_id"]}))[0]["role"]:
+                                                DB.DATABASE['user'].update_one(
+                                                    {"google_object._id": studentSubmission["user_id"]},
+                                                    {"$set": {
+                                                        "current_token":
+                                                            list(DB.DATABASE['user'].find(
+                                                                {"google_object._id":
+                                                                     studentSubmission["user_id"]}))[0][
+                                                                "current_token"] + giveToken
+                                                    }})
+                                                DB.DATABASE['token'].update_one(
+                                                    {"_id": "1"},
+                                                    {"$set": {
+                                                        "amount":
+                                                            list(DB.DATABASE['token'].find(
+                                                                {"_id": "1"}))[0]["amount"] - giveToken
+                                                    }})
+                                                TokenHistoryServices.add(giveToken, list(DB.DATABASE['user'].find(
+                                                    {"google_object._id": studentSubmission["user_id"]}))[0]["_id"],
+                                                                         "sendTokenToStudent")
+                                    except:
+                                        pass
             return "Send the token to the student successfully"

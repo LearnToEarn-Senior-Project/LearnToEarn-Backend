@@ -57,7 +57,7 @@ class TokenHistoryServices:
             'amountOfCoin': float(amountOfCoin),
             'student_id': tokenHistory.student_id,
             'reward_id': tokenHistory.reward_id if reward_id else None,
-            'checked': False
+            'checked': False if reward_id != "sendTokenToStudent" else True
         })
         return list(DB.DATABASE['tokenHistory'].find({"_id": id}).limit(1))[0]
 

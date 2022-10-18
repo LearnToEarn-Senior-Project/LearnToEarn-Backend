@@ -48,7 +48,7 @@ class RewardServices:
                 'name': reward.name,
                 'detail': reward.detail,
                 'amount': reward.amount,
-                'price': reward.price,
+                'price': float(reward.price),
                 'image': reward.image_url
             })
             return RewardServices.getByID(id)
